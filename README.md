@@ -1,0 +1,136 @@
+# Meta Campaign Analyzer
+
+Plugin para Claude Code que conecta con la **Meta Marketing API** y analiza campañas de Facebook e Instagram usando la metodología de las **3 Q's**: ¿Qué pasó? / ¿Por qué pasó? / ¿Qué haremos?
+
+---
+
+## ¿Qué hace?
+
+Guía al usuario por un flujo completo de análisis:
+
+```
+Access Token → Negocios → Campañas → Tipo de campaña → Análisis → [Conjuntos → Anuncios]
+```
+
+Soporta 5 tipos de campaña con métricas y benchmarks específicos para cada uno:
+
+| Tipo | Métricas |
+|------|---------|
+| 🛒 Ventas | ROAS, embudo completo, valor de conversión |
+| 💬 Interacción | Conversaciones, tasa de conversión a mensajes |
+| 📋 Clientes Potenciales — Formularios | CPL, tasa de conversión de formulario |
+| 🌐 Clientes Potenciales — Sitio web | CPL, tasa de conversión de landing page |
+| 🏪 Reconocimiento / Tiendas físicas | Alcance, frecuencia, CPM |
+
+Incluye análisis de **Efecto Desglose** para decisiones correctas a nivel de adset y anuncio individual.
+
+---
+
+## Requisitos
+
+- [Claude Code](https://claude.ai/code) v1.0.33 o posterior
+- Python 3.7+
+- Librería `requests`:
+  ```bash
+  pip install requests
+  ```
+- Token de acceso de Meta con permisos: `ads_read`, `ads_management`, `business_management`, `read_insights`
+
+---
+
+## Instalación
+
+### Como Plugin (recomendado)
+
+```bash
+claude --plugin-dir ./meta-campaign-analyzer
+```
+
+O instálalo permanentemente:
+
+```bash
+/plugin install <ruta-o-url>
+```
+
+### Manual (standalone)
+
+Copia la carpeta `skills/meta-campaign-analyzer/` a tu directorio de skills:
+
+```bash
+cp -r skills/meta-campaign-analyzer ~/.claude/skills/
+```
+
+---
+
+## Uso
+
+1. Abre Claude Code con el plugin activo
+2. Habla sobre cualquier campaña de Meta — Claude activará el skill automáticamente
+3. Sigue el flujo paso a paso:
+
+**Paso 1 — Obtener negocios:**
+```bash
+# Edita ACCESS_TOKEN en el script, luego:
+python scripts/fetch_businesses.py
+# Pega el JSON generado en Claude
+```
+
+**Paso 2 — Obtener campañas:**
+```bash
+# Edita ACCESS_TOKEN y AD_ACCOUNT_ID, luego:
+python scripts/fetch_campaigns.py
+# Pega el JSON generado en Claude
+```
+
+**Paso 3 — Obtener insights:**
+```bash
+# Edita ACCESS_TOKEN y CAMPAIGN_ID, luego:
+python scripts/fetch_insights.py
+# Pega el JSON generado en Claude → análisis automático
+```
+
+**Opcional — Profundizar en adsets y anuncios:**
+```bash
+python scripts/fetch_adsets.py   # Conjuntos de anuncios
+python scripts/fetch_ads.py      # Anuncios individuales
+```
+
+---
+
+## Estructura del proyecto
+
+```
+meta-campaign-analyzer/
+├── .claude-plugin/
+│   └── plugin.json              # Manifiesto del plugin
+├── skills/
+│   └── meta-campaign-analyzer/
+│       └── SKILL.md             # Lógica y metodología de análisis
+├── scripts/
+│   ├── fetch_businesses.py      # Paso 1: negocios y cuentas
+│   ├── fetch_campaigns.py       # Paso 2: campañas de una cuenta
+│   ├── fetch_insights.py        # Paso 3: métricas de una campaña
+│   ├── fetch_adsets.py          # Conjuntos de anuncios
+│   └── fetch_ads.py             # Anuncios individuales
+└── .claude/
+    └── launch.json              # Configuraciones para Claude Code
+```
+
+---
+
+## Cómo obtener tu Access Token
+
+1. Ve a https://developers.facebook.com/apps/
+2. Crea una app → tipo **"Negocios"**
+3. Agrega el producto **"Marketing API"**
+4. Ve al [Graph API Explorer](https://developers.facebook.com/tools/explorer/)
+5. Selecciona tu app → **"Generar token de acceso"**
+6. Marca los permisos: `ads_read`, `ads_management`, `business_management`, `read_insights`
+
+> **Para uso continuo:** crea un **System User Token** en Business Manager → Configuración → Usuarios del sistema. Los tokens de usuario expiran.
+
+---
+
+## Licencia
+
+MIT

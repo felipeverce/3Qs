@@ -1,0 +1,16 @@
+# Archivos de output de los scripts (contienen datos reales de tus cuentas)
+businesses.json
+campaigns.json
+insights_*.json
+adsets_*.json
+ads_*.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# OS
+.DS_Store
+Thumbs.db
