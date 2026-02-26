@@ -121,11 +121,14 @@ meta-campaign-analyzer/
 ## Cómo obtener tu Access Token
 
 1. Ve a https://developers.facebook.com/apps/
-2. Crea una app → tipo **"Negocios"**
-3. Agrega el producto **"Marketing API"**
-4. Ve al [Graph API Explorer](https://developers.facebook.com/tools/explorer/)
-5. Selecciona tu app → **"Generar token de acceso"**
-6. Marca los permisos: `ads_read`, `ads_management`, `business_management`, `read_insights`
+2. Click en **"Crear app"** e ingresa el nombre
+3. En **Caso de uso** selecciona:
+   - ✅ Crear y administrar anuncios con la API de Marketing
+   - ✅ Medir datos de rendimiento de los anuncios con la API de Marketing
+4. Selecciona el **portafolio comercial** y crea la app
+5. En el menú superior ve a **Herramientas → Explorador de API Graph**
+6. Selecciona tu app → **"Generar token de acceso"**
+7. Agrega los permisos: `ads_read`, `ads_management`, `business_management`, `read_insights`
 
 > **Para uso continuo:** crea un **System User Token** en Business Manager → Configuración → Usuarios del sistema. Los tokens de usuario expiran.
 
