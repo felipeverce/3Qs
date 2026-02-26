@@ -499,6 +499,13 @@ Cuando el usuario quiera ver el detalle por anuncio:
 
 ---
 
+## Créditos
+
+La metodología de las **3 Q's** (¿Qué pasó? / ¿Por qué pasó? / ¿Qué haremos?) está basada en el trabajo de **Felipe Vergara**.
+📺 https://www.youtube.com/@FelipeVergara
+
+---
+
 ## Notas importantes
 
 - **Rate limits**: Error 17 o 32 → esperar antes de reintentar

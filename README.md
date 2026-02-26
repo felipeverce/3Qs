@@ -131,6 +131,14 @@ meta-campaign-analyzer/
 
 ---
 
+## Créditos
+
+La metodología de análisis de campañas (las **3 Q's**: ¿Qué pasó? / ¿Por qué pasó? / ¿Qué haremos?) está basada en el trabajo de **Felipe Vergara**.
+
+📺 [YouTube: @FelipeVergara](https://www.youtube.com/@FelipeVergara)
+
+---
+
 ## Licencia
 
 MIT
