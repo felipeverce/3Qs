@@ -118,6 +118,19 @@ meta-campaign-analyzer/
 
 ---
 
+## Seguridad / Anti-ban
+
+Meta ha baneado cuentas legítimas (algunas con 16+ años) desde finales de 2025 cuando detecta patrones de uso automatizado "no humano" — aunque la API sea solo-lectura. Este skill sigue las prácticas seguras, pero hay decisiones que dependen del usuario:
+
+- **Usa un System User Token**, no un token personal (los personales expiran y su uso continuo es señal de riesgo para Meta).
+- **Crea la Developer App en una Business Manager separada** de la que contiene tus cuentas publicitarias de producción.
+- **Solicita solo `ads_read` + `business_management`** — nunca `ads_management` (este skill no modifica campañas).
+- **No uses MCPs de Meta no oficiales, ni scraping del Business Manager** — el sistema "Andromeda" de Meta banea este tipo de actividad al instante.
+
+Las reglas completas que Claude aplica al operar este skill están en [`CLAUDE.md`](./CLAUDE.md) (se carga automáticamente en Claude Code).
+
+---
+
 ## Cómo obtener tu Access Token
 
 1. Ve a https://developers.facebook.com/apps/

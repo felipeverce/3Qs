@@ -47,7 +47,19 @@ Tú ejecutas todo. El usuario SOLO te da:
 
 ## FASE 1: Obtener el Access Token
 
-Pide al usuario su **Access Token** de Meta. Si no lo tiene, guíalo:
+**⚠️ Antes de pedir el token — lee `/CLAUDE.md` de este repo si existe.** Contiene las reglas anti-ban que debes aplicar (System User Token obligatorio, Developer App en BM separada, nada de scraping/MCPs no oficiales, etc.).
+
+Pregunta al usuario qué tipo de token tiene:
+
+- **System User Token** (recomendado, no expira) → úsalo directamente.
+- **Token personal del Explorador de API Graph** → advierte del riesgo:
+  > "⚠️ Este token es personal. Si Meta marca la actividad, tu cuenta personal queda restringida. Te recomiendo generar un System User Token (5 min). ¿Continuamos con el personal o lo generamos?"
+
+Si no tiene ninguno, guíalo en este orden:
+
+### 1.a Crear la Developer App (en una Business Manager SEPARADA de producción)
+
+> 🚫 No crear la app en la misma Business Manager que contiene las cuentas publicitarias de producción — causa frecuente de baneos en 2025. Usa una BM nueva o de pruebas.
 
 1. Ir a https://developers.facebook.com/apps/
 2. Click en **"Crear app"**
@@ -55,14 +67,21 @@ Pide al usuario su **Access Token** de Meta. Si no lo tiene, guíalo:
 4. En **Caso de uso** seleccionar:
    - ✅ Crear y administrar anuncios con la API de Marketing
    - ✅ Medir datos de rendimiento de los anuncios con la API de Marketing
-5. Seleccionar el **portafolio comercial** y crear la app
-6. En el menú superior ir a **Herramientas → Explorador de API Graph**
-7. Seleccionar la app → **"Generar token de acceso"**
-8. Agregar SOLO los permisos de lectura: `ads_read`, `business_management`
-   (este skill es de solo-lectura — no necesita `ads_management`)
-9. Generar y copiar el token
+5. Seleccionar el **portafolio comercial SEPARADO** (no el de producción) y crear la app
 
-> ⚠️ El token de usuario expira. Para uso continuo, crear un **System User Token** en Business Manager → Configuración → Usuarios del sistema.
+### 1.b Generar un System User Token (recomendado)
+
+1. Business Manager → **Configuración de la empresa** → **Usuarios** → **Usuarios del sistema**.
+2. **Añadir** → nombre (ej. `meta-analyzer-read`) → rol: **Empleado**.
+3. **Asignar activos** → selecciona las cuentas publicitarias de producción → permiso **solo Ver rendimiento**.
+4. **Generar nuevo token** → seleccionar la Developer App de 1.a → marcar SOLO `ads_read` y `business_management` (nunca `ads_management`, nunca `read_insights`) → token permanente.
+
+### 1.c (Alternativa rápida) Token personal temporal — solo para probar
+
+1. En el menú superior de la app ir a **Herramientas → Explorador de API Graph**.
+2. Seleccionar la app → **"Generar token de acceso"**.
+3. Agregar SOLO: `ads_read`, `business_management`.
+4. ⚠️ Este token expira. Para uso continuo migra a System User Token (1.b).
 
 **Cuando el usuario te pegue el token en el chat:**
 
