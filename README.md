@@ -34,7 +34,7 @@ Incluye análisis de **Efecto Desglose** para decisiones correctas a nivel de ad
   ```bash
   pip install requests
   ```
-- Token de acceso de Meta con permisos: `ads_read`, `ads_management`, `business_management`, `read_insights`
+- Token de acceso de Meta con permisos de **solo lectura**: `ads_read` y `business_management` (este proyecto no modifica campañas — no necesita `ads_management`)
 
 ---
 
@@ -128,7 +128,7 @@ meta-campaign-analyzer/
 4. Selecciona el **portafolio comercial** y crea la app
 5. En el menú superior ve a **Herramientas → Explorador de API Graph**
 6. Selecciona tu app → **"Generar token de acceso"**
-7. Agrega los permisos: `ads_read`, `ads_management`, `business_management`, `read_insights`
+7. Agrega SOLO los permisos de lectura: `ads_read` y `business_management`
 
 > **Para uso continuo:** crea un **System User Token** en Business Manager → Configuración → Usuarios del sistema. Los tokens de usuario expiran.
 

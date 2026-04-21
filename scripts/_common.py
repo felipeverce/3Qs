@@ -178,7 +178,7 @@ def _handle_api_error(response):
         sys.exit(1)
     if code == PERMISSIONS_ERROR:
         print("\n❌ Permisos insuficientes (code 200).")
-        print("   → El token necesita: ads_read, ads_management, business_management, read_insights")
+        print("   → El token necesita (solo-lectura): ads_read, business_management")
         sys.exit(1)
     try:
         response.raise_for_status()

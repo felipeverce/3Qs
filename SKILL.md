@@ -28,7 +28,7 @@ Pide al usuario su **Access Token** de Meta. Si no lo tiene, guíalo:
 3. Agregar producto → **"Marketing API"**
 4. Ir a https://developers.facebook.com/tools/explorer/
 5. Seleccionar la app → **"Generar token de acceso"**
-6. Marcar permisos: `ads_read`, `ads_management`, `business_management`, `read_insights`
+6. Marcar SOLO los permisos de lectura: `ads_read`, `business_management`
 7. Generar y copiar el token
 
 > ⚠️ El token de usuario expira. Para uso continuo, crear un **System User Token** en Business Manager → Configuración → Usuarios del sistema.

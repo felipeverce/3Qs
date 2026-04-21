@@ -58,7 +58,8 @@ Pide al usuario su **Access Token** de Meta. Si no lo tiene, guíalo:
 5. Seleccionar el **portafolio comercial** y crear la app
 6. En el menú superior ir a **Herramientas → Explorador de API Graph**
 7. Seleccionar la app → **"Generar token de acceso"**
-8. Agregar los permisos: `ads_read`, `ads_management`, `business_management`, `read_insights`
+8. Agregar SOLO los permisos de lectura: `ads_read`, `business_management`
+   (este skill es de solo-lectura — no necesita `ads_management`)
 9. Generar y copiar el token
 
 > ⚠️ El token de usuario expira. Para uso continuo, crear un **System User Token** en Business Manager → Configuración → Usuarios del sistema.
