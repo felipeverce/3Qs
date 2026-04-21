@@ -127,7 +127,7 @@ Meta ha baneado cuentas legítimas (algunas con 16+ años) desde finales de 2025
 - **Solicita solo `ads_read` + `business_management`** — nunca `ads_management` (este skill no modifica campañas).
 - **No uses MCPs de Meta no oficiales, ni scraping del Business Manager** — el sistema "Andromeda" de Meta banea este tipo de actividad al instante.
 
-Las reglas completas que Claude aplica al operar este skill están en [`CLAUDE.md`](./CLAUDE.md) (se carga automáticamente en Claude Code).
+Si vas a operar este skill desde Claude Code, asegúrate de que el Claude tenga cargadas las reglas anti-ban (template reutilizable: `templates/CLAUDE-meta-readonly.md` en el directorio padre de este repo, o cópialo a tu propio proyecto).
 
 ---
 

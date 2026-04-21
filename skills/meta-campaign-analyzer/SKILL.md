@@ -47,7 +47,7 @@ Tú ejecutas todo. El usuario SOLO te da:
 
 ## FASE 1: Obtener el Access Token
 
-**⚠️ Antes de pedir el token — lee `/CLAUDE.md` de este repo si existe.** Contiene las reglas anti-ban que debes aplicar (System User Token obligatorio, Developer App en BM separada, nada de scraping/MCPs no oficiales, etc.).
+**⚠️ Antes de pedir el token — aplica las reglas anti-ban:** System User Token (no personal), Developer App en Business Manager SEPARADA de producción, scopes solo `ads_read` + `business_management` (nunca `ads_management`), nada de scraping de UI ni MCPs no oficiales. Si tienes el template `CLAUDE-meta-readonly.md` disponible, léelo antes de ejecutar.
 
 Pregunta al usuario qué tipo de token tiene:
 
