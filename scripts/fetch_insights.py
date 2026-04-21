@@ -50,7 +50,7 @@ def get_campaign_info(campaign_id, token):
             "access_token": token,
             "fields": (
                 "id,name,status,objective,daily_budget,lifetime_budget,"
-                "budget_remaining,destination_type,created_time,updated_time"
+                "budget_remaining,created_time,updated_time"
             ),
         },
     )
