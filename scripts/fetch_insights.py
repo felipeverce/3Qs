@@ -26,7 +26,6 @@ OBJECTIVE_MAP = {
     "POST_ENGAGEMENT":         "interaccion",
     "PAGE_LIKES":              "interaccion",
     "EVENT_RESPONSES":         "interaccion",
-    "LINK_CLICKS":             "interaccion",
     # Leads (se distinguen más abajo por destination_type)
     "OUTCOME_LEADS":           "cp_formularios",
     "LEAD_GENERATION":         "cp_formularios",
@@ -106,15 +105,18 @@ def main():
     cfg = load_config(required=("META_ACCESS_TOKEN", "CAMPAIGN_ID"))
     token       = cfg["access_token"]
     campaign_id = cfg["campaign_id"]
-    date_preset = cfg["date_preset"]
+    date_preset = cfg["date_preset"] or "last_30d"
 
     print(f"\n🔍 Obteniendo datos de campaña {campaign_id} ({date_preset})...\n")
 
     campaign = get_campaign_info(campaign_id, token)
 
-    # Si el destination_type no viene a nivel campaña, consultar el primer adset
+    # destination_type no es un campo válido a nivel campaña en Graph API v21.0 (error 100).
+    # Solo existe a nivel adset. Consultarlo únicamente si el objetivo sugiere leads,
+    # donde hace falta distinguir formulario instantáneo vs sitio web externo.
+    base_type = OBJECTIVE_MAP.get((campaign.get("objective") or "").upper(), "desconocido")
     fallback_dest = ""
-    if not campaign.get("destination_type"):
+    if base_type == "cp_formularios":
         fallback_dest = get_first_adset_destination(campaign_id, token)
 
     campaign_type, destination_type = detect_campaign_type(campaign, fallback_dest)

@@ -66,7 +66,7 @@ def main():
     cfg = load_config(required=("META_ACCESS_TOKEN", "CAMPAIGN_ID"))
     token       = cfg["access_token"]
     campaign_id = cfg["campaign_id"]
-    date_preset = cfg["date_preset"] if cfg["date_preset"] != "last_30d" else "last_7d"
+    date_preset = cfg["date_preset"] or "last_7d"
 
     print(f"\n🔍 Obteniendo conjuntos de anuncios...")
     print(f"📅 Periodo: {date_preset}\n")

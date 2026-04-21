@@ -119,11 +119,11 @@ def load_config(required=("META_ACCESS_TOKEN",)):
         print()
         sys.exit(1)
     return {
-        "access_token": os.environ.get("META_ACCESS_TOKEN", ""),
+        "access_token":  os.environ.get("META_ACCESS_TOKEN", ""),
         "ad_account_id": os.environ.get("AD_ACCOUNT_ID", ""),
         "campaign_id":   os.environ.get("CAMPAIGN_ID", ""),
         "adset_id":      os.environ.get("ADSET_ID", ""),
-        "date_preset":   os.environ.get("DATE_PRESET", "last_30d"),
+        "date_preset":   os.environ.get("DATE_PRESET"),  # None si no está seteado — cada script aplica su default
     }
 
 
