@@ -1,58 +1,33 @@
 """
-Meta Campaign Analyzer - Paso 1: Obtener negocios y cuentas de anuncios
+Meta Campaign Analyzer - Paso 1: Obtener negocios y cuentas de anuncios.
 
-Edita ACCESS_TOKEN con tu token y ejecuta:
-  pip install requests
+Uso:
+  export META_ACCESS_TOKEN=EAA...
   python scripts/fetch_businesses.py
+
+(o crea un archivo .env en la raíz del proyecto con META_ACCESS_TOKEN=...)
 """
 
-import sys
-import requests
 import json
 
-sys.stdout.reconfigure(encoding="utf-8")
-
-# ══════════════════════════════════════════
-# CONFIGURACIÓN - Edita este valor
-# ══════════════════════════════════════════
-ACCESS_TOKEN = "TU_ACCESS_TOKEN_AQUI"
-# ══════════════════════════════════════════
-
-BASE_URL = "https://graph.facebook.com/v21.0"
-
-
-def get_businesses():
-    url = f"{BASE_URL}/me/businesses"
-    params = {
-        "access_token": ACCESS_TOKEN,
-        "fields": "id,name",
-        "limit": 100,
-    }
-    r = requests.get(url, params=params)
-    r.raise_for_status()
-    return r.json().get("data", [])
-
-
-def get_ad_accounts():
-    url = f"{BASE_URL}/me/adaccounts"
-    params = {
-        "access_token": ACCESS_TOKEN,
-        "fields": "id,name,account_status,currency,business",
-        "limit": 100,
-    }
-    r = requests.get(url, params=params)
-    r.raise_for_status()
-    return r.json().get("data", [])
+from _common import api_get, load_config
 
 
 def main():
+    cfg = load_config()
+    token = cfg["access_token"]
+
     print("\n📋 Obteniendo perfiles de negocio...\n")
 
     result = {"businesses": [], "ad_accounts": []}
 
     # Negocios
     try:
-        businesses = get_businesses()
+        businesses = api_get(
+            "/me/businesses",
+            {"access_token": token, "fields": "id,name", "limit": 100},
+            paginate=True,
+        )["data"]
         result["businesses"] = businesses
         if businesses:
             print(f"  Negocios encontrados: {len(businesses)}")
@@ -60,13 +35,23 @@ def main():
                 print(f"    → [{b['id']}] {b['name']}")
         else:
             print("  Sin negocios directos asociados al token.")
+    except SystemExit:
+        raise
     except Exception as e:
         print(f"  No se pudieron obtener negocios: {e}")
 
-    # Cuentas de anuncios — agrupa por negocio, excluye Read-Only
+    # Cuentas de anuncios
     print("\n📋 Obteniendo cuentas de anuncios...\n")
     try:
-        all_accounts = get_ad_accounts()
+        all_accounts = api_get(
+            "/me/adaccounts",
+            {
+                "access_token": token,
+                "fields": "id,name,account_status,currency,business",
+                "limit": 100,
+            },
+            paginate=True,
+        )["data"]
 
         # Agrupar por negocio
         by_business = {}
@@ -79,11 +64,9 @@ def main():
             else:
                 standalone.append(a)
 
-        # Mostrar agrupadas
         for biz_name, accounts in by_business.items():
-            # Separar propias (sin Read-Only) de accesos externos
-            owned = [a for a in accounts if "(Read-Only)" not in a["name"]]
-            readonly = [a for a in accounts if "(Read-Only)" in a["name"]]
+            owned    = [a for a in accounts if "(Read-Only)" not in a["name"]]
+            readonly = [a for a in accounts if "(Read-Only)"     in a["name"]]
 
             print(f"  [{biz_name}]")
             for a in owned:
@@ -100,11 +83,12 @@ def main():
                 print(f"    → [{a['id']}] {a['name']} | {status}")
 
         result["ad_accounts"] = all_accounts
+    except SystemExit:
+        raise
     except Exception as e:
         print(f"  No se pudieron obtener cuentas: {e}")
         result["ad_accounts"] = []
 
-    # Guardar
     filename = "businesses.json"
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)

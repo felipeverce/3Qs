@@ -1,123 +1,80 @@
 """
-Meta Campaign Analyzer - Paso 4a: Obtener conjuntos de anuncios de una campaña
+Meta Campaign Analyzer - Paso 4a: Conjuntos de anuncios de una campaña.
 
-Edita ACCESS_TOKEN y CAMPAIGN_ID, luego ejecuta:
+Uso:
+  export META_ACCESS_TOKEN=EAA...
+  export CAMPAIGN_ID=123456789
+  export DATE_PRESET=last_7d   # opcional
   python scripts/fetch_adsets.py
 
 NOTA: Con presupuesto CBO (Advantage+), evalúa resultados a nivel de CAMPAÑA.
 Con presupuesto por conjunto, evalúa a nivel de CONJUNTO.
 """
 
-import sys
-import requests
+import json
 
-sys.stdout.reconfigure(encoding="utf-8")
-
-# ══════════════════════════════════════════
-# CONFIGURACIÓN - Edita estos valores
-# ══════════════════════════════════════════
-ACCESS_TOKEN = "TU_ACCESS_TOKEN_AQUI"
-CAMPAIGN_ID  = "TU_CAMPAIGN_ID_AQUI"
-DATE_PRESET  = "last_7d"  # Opciones: last_7d, last_14d, last_30d, last_90d, this_month, last_month
-# ══════════════════════════════════════════
-
-BASE_URL = "https://graph.facebook.com/v21.0"
-
-INSIGHTS_FIELDS = ",".join([
-    "impressions", "reach", "frequency", "spend", "cpm",
-    "unique_clicks", "unique_ctr", "cost_per_unique_click",
-    "outbound_clicks", "outbound_clicks_ctr", "cost_per_outbound_click",
-    "actions", "action_values", "cost_per_action_type",
-    "purchase_roas", "video_avg_time_watched_actions",
-    "quality_ranking", "engagement_rate_ranking", "conversion_rate_ranking",
-])
-
-DELIVERY_ICONS = {
-    "ACTIVE":           "🟢 Activo",
-    "PAUSED":           "⏸️  Pausado",
-    "CAMPAIGN_PAUSED":  "⏸️  Pausa (campaña)",
-    "DELETED":          "🗑️  Eliminado",
-    "ARCHIVED":         "📦 Archivado",
-    "WITH_ISSUES":      "⚠️  Con problemas",
-    "IN_PROCESS":       "⚙️  En proceso",
-}
-
-LEARNING_LABELS = {
-    "LEARNING":          "📚 En aprendizaje  ← NO pausar (efecto desglose)",
-    "LEARNING_LIMITED":  "⚠️  Aprendizaje limitado — necesita más conversiones",
-    "LEARNING_COMPLETE": "✅ Aprendizaje completo",
-    "DATA_COLLECTION":   "📊 Recolectando datos",
-    "NOT_DELIVERING":    "🔴 Sin entrega",
-}
+from _common import (
+    DELIVERY_ICONS,
+    INSIGHTS_FIELDS,
+    LEARNING_LABELS,
+    api_get,
+    fmt_budget,
+    fmt_money,
+    fmt_num,
+    get_action,
+    load_config,
+)
 
 
-# ── Helpers ────────────────────────────────────────────────────────
-
-def fmt_money(val):
-    try:    return f"${float(val):,.2f}"
-    except: return "—"
-
-def fmt_num(val, dec=0):
-    try:
-        return f"{float(val):,.{dec}f}" if dec else f"{int(float(val)):,}"
-    except: return "—"
-
-def get_action(lst, key):
-    for item in (lst or []):
-        if item.get("action_type") == key:
-            return item.get("value")
-    return None
-
-def fmt_budget(adset):
-    daily    = adset.get("daily_budget")
-    lifetime = adset.get("lifetime_budget")
-    if daily    and float(daily) > 0:    return f"${float(daily)/100:,.2f}/día"
-    if lifetime and float(lifetime) > 0: return f"${float(lifetime)/100:,.2f} total"
-    return "CBO (controlado por campaña)"
-
-
-# ── API calls ──────────────────────────────────────────────────────
-
-def get_campaign_info():
-    r = requests.get(f"{BASE_URL}/{CAMPAIGN_ID}", params={
-        "access_token": ACCESS_TOKEN,
+def get_campaign_info(campaign_id, token):
+    return api_get(f"/{campaign_id}", {
+        "access_token": token,
         "fields": "id,name,objective,daily_budget,lifetime_budget",
     })
-    r.raise_for_status()
-    return r.json()
 
-def get_adsets():
-    r = requests.get(f"{BASE_URL}/{CAMPAIGN_ID}/adsets", params={
-        "access_token": ACCESS_TOKEN,
-        "fields": "id,name,status,effective_status,daily_budget,lifetime_budget,"
-                  "budget_remaining,learning_stage_info,optimization_goal,bid_strategy",
-        "limit": 100,
-    })
-    r.raise_for_status()
-    return r.json().get("data", [])
 
-def get_insights(adset_id):
-    r = requests.get(f"{BASE_URL}/{adset_id}/insights", params={
-        "access_token": ACCESS_TOKEN,
-        "fields": INSIGHTS_FIELDS,
-        "date_preset": DATE_PRESET,
-        "level": "adset",
-    })
-    r.raise_for_status()
-    data = r.json().get("data", [])
+def get_adsets(campaign_id, token):
+    return api_get(
+        f"/{campaign_id}/adsets",
+        {
+            "access_token": token,
+            "fields": (
+                "id,name,status,effective_status,daily_budget,lifetime_budget,"
+                "budget_remaining,learning_stage_info,optimization_goal,bid_strategy,"
+                "destination_type"
+            ),
+            "limit": 100,
+        },
+        paginate=True,
+    )["data"]
+
+
+def get_insights(adset_id, token, date_preset):
+    data = api_get(
+        f"/{adset_id}/insights",
+        {
+            "access_token": token,
+            "fields": INSIGHTS_FIELDS,
+            "date_preset": date_preset,
+            "level": "adset",
+        },
+    ).get("data", [])
     return data[0] if data else {}
 
 
-# ── Main ───────────────────────────────────────────────────────────
-
 def main():
-    print(f"\n🔍 Obteniendo conjuntos de anuncios...")
-    print(f"📅 Periodo: {DATE_PRESET}\n")
+    cfg = load_config(required=("META_ACCESS_TOKEN", "CAMPAIGN_ID"))
+    token       = cfg["access_token"]
+    campaign_id = cfg["campaign_id"]
+    date_preset = cfg["date_preset"] if cfg["date_preset"] != "last_30d" else "last_7d"
 
-    campaign = get_campaign_info()
+    print(f"\n🔍 Obteniendo conjuntos de anuncios...")
+    print(f"📅 Periodo: {date_preset}\n")
+
+    campaign = get_campaign_info(campaign_id, token)
     camp_name = campaign.get("name", "—")
 
-    # Detectar si es CBO: tiene daily_budget o lifetime_budget a nivel campaña
+    # CBO: budget a nivel campaña
     is_cbo = bool(campaign.get("daily_budget") or campaign.get("lifetime_budget"))
 
     print(f"📣 Campaña: {camp_name}")
@@ -132,7 +89,7 @@ def main():
 
     print()
 
-    adsets = get_adsets()
+    adsets = get_adsets(campaign_id, token)
     if not adsets:
         print("❌ No se encontraron conjuntos de anuncios.")
         return
@@ -141,14 +98,15 @@ def main():
     print(f"📦 {len(adsets)} conjunto(s) — {active} activo(s)\n")
     print("═" * 68)
 
+    enriched = []
+
     for i, adset in enumerate(adsets, 1):
         adset_id   = adset["id"]
         name       = adset.get("name", "Sin nombre")
         eff_status = adset.get("effective_status", adset.get("status", "UNKNOWN"))
         status_str = DELIVERY_ICONS.get(eff_status, f"❓ {eff_status}")
-        budget_str = fmt_budget(adset)
+        budget_str = fmt_budget(adset) if not is_cbo else "CBO (controlado por campaña)"
 
-        # Fase de aprendizaje
         learn_info = adset.get("learning_stage_info") or {}
         learn_st   = learn_info.get("status", "")
         learn_str  = LEARNING_LABELS.get(learn_st, "")
@@ -160,10 +118,13 @@ def main():
         if learn_str:
             print(f"       Aprendizaje: {learn_str}")
 
-        # Insights
-        ins = get_insights(adset_id)
+        ins = get_insights(adset_id, token, date_preset)
+        adset_record = dict(adset)
+        adset_record["insights"] = ins
+        enriched.append(adset_record)
+
         if not ins:
-            print(f"\n       📊 Sin datos de insights para '{DATE_PRESET}'")
+            print(f"\n       📊 Sin datos de insights para '{date_preset}'")
             continue
 
         spend       = ins.get("spend")
@@ -175,7 +136,6 @@ def main():
         cpa_list    = ins.get("cost_per_action_type", [])
         roas_data   = ins.get("purchase_roas", [])
 
-        # Resultados según tipo
         purchases = get_action(actions, "purchase")
         leads     = get_action(actions, "lead")
         messages  = get_action(actions, "messaging_conversation_started_7d")
@@ -185,19 +145,20 @@ def main():
         cpa_msg      = get_action(cpa_list, "messaging_conversation_started_7d")
         roas         = roas_data[0].get("value") if roas_data else None
 
-        # Video
-        video_view_3s  = get_action(actions, "video_view")
-        video_avg_raw  = ins.get("video_avg_time_watched_actions", [])
-        video_avg_val  = video_avg_raw[0].get("value") if video_avg_raw else None
-        video_3s_rate  = (float(video_view_3s) / float(impressions) * 100
-                          if video_view_3s and impressions and float(impressions) > 0 else None)
+        video_view_3s = get_action(actions, "video_view")
+        video_avg_raw = ins.get("video_avg_time_watched_actions", [])
+        video_avg_val = video_avg_raw[0].get("value") if video_avg_raw else None
+        video_3s_rate = (
+            float(video_view_3s) / float(impressions) * 100
+            if video_view_3s and impressions and float(impressions) > 0
+            else None
+        )
 
-        # Calidad
         quality    = ins.get("quality_ranking", "")
         engagement = ins.get("engagement_rate_ranking", "")
         conversion = ins.get("conversion_rate_ranking", "")
 
-        print(f"\n       📊 Métricas ({DATE_PRESET}):")
+        print(f"\n       📊 Métricas ({date_preset}):")
         print(f"          Importe gastado:   {fmt_money(spend)}")
         print(f"          Alcance:           {fmt_num(reach)}")
         print(f"          Impresiones:       {fmt_num(impressions)}")
@@ -212,7 +173,8 @@ def main():
         if purchases:
             print(f"\n          🛒 Compras:          {fmt_num(purchases)}")
             print(f"          Costo/compra:       {fmt_money(cpa_purchase)}")
-            if roas: print(f"          ROAS:               {fmt_num(roas, 2)}x")
+            if roas:
+                print(f"          ROAS:               {fmt_num(roas, 2)}x")
 
         if leads:
             print(f"\n          📋 Leads:            {fmt_num(leads)}")
@@ -227,11 +189,24 @@ def main():
             print(f"          Interacción:        {engagement}")
             print(f"          Conversión:         {conversion}")
 
+    # Volcar JSON para pegar en Claude
+    filename = f"adsets_{campaign_id}.json"
+    payload = {
+        "campaign_id":  campaign_id,
+        "campaign":     campaign,
+        "is_cbo":       is_cbo,
+        "date_preset":  date_preset,
+        "adsets":       enriched,
+    }
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+
     print(f"\n{'═' * 68}")
     print(f"\n✅ Análisis de conjuntos completado.")
+    print(f"💾 Datos guardados en: {filename}")
     if is_cbo:
         print("⚠️  CBO activo: evalúa el éxito final a nivel de CAMPAÑA.")
-    print()
+    print("\nPega el contenido del JSON en Claude para profundizar el análisis.\n")
 
 
 if __name__ == "__main__":

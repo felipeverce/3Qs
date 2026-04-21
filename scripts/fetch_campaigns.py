@@ -1,49 +1,37 @@
 """
-Meta Campaign Analyzer - Paso 2: Obtener campañas de una cuenta de anuncios
+Meta Campaign Analyzer - Paso 2: Obtener campañas de una cuenta de anuncios.
 
-Edita ACCESS_TOKEN y AD_ACCOUNT_ID, luego ejecuta:
+Uso:
+  export META_ACCESS_TOKEN=EAA...
+  export AD_ACCOUNT_ID=act_123456789
   python scripts/fetch_campaigns.py
 """
 
-import sys
-import requests
 import json
 
-sys.stdout.reconfigure(encoding="utf-8")
-
-# ══════════════════════════════════════════
-# CONFIGURACIÓN - Edita estos valores
-# ══════════════════════════════════════════
-ACCESS_TOKEN  = "TU_ACCESS_TOKEN_AQUI"
-AD_ACCOUNT_ID = "TU_AD_ACCOUNT_ID_AQUI"
-# ══════════════════════════════════════════
-
-BASE_URL = "https://graph.facebook.com/v21.0"
-
-STATUS_ICON = {
-    "ACTIVE":   "🟢",
-    "PAUSED":   "🔴",
-    "ARCHIVED": "⚫",
-    "DELETED":  "⚫",
-}
-
-
-def get_campaigns():
-    url = f"{BASE_URL}/{AD_ACCOUNT_ID}/campaigns"
-    params = {
-        "access_token": ACCESS_TOKEN,
-        "fields": "id,name,status,objective,daily_budget,lifetime_budget,budget_remaining,start_time,stop_time,created_time,updated_time,destination_type",
-        "limit": 100,
-    }
-    r = requests.get(url, params=params)
-    r.raise_for_status()
-    return r.json().get("data", [])
+from _common import STATUS_ICON, api_get, fmt_budget, load_config
 
 
 def main():
-    print(f"\n📋 Obteniendo campañas de {AD_ACCOUNT_ID}...\n")
+    cfg = load_config(required=("META_ACCESS_TOKEN", "AD_ACCOUNT_ID"))
+    token      = cfg["access_token"]
+    account_id = cfg["ad_account_id"]
 
-    campaigns = get_campaigns()
+    print(f"\n📋 Obteniendo campañas de {account_id}...\n")
+
+    campaigns = api_get(
+        f"/{account_id}/campaigns",
+        {
+            "access_token": token,
+            "fields": (
+                "id,name,status,objective,daily_budget,lifetime_budget,"
+                "budget_remaining,start_time,stop_time,created_time,updated_time,"
+                "destination_type"
+            ),
+            "limit": 100,
+        },
+        paginate=True,
+    )["data"]
 
     if not campaigns:
         print("  No se encontraron campañas.")
@@ -52,9 +40,11 @@ def main():
     print(f"  Campañas encontradas: {len(campaigns)}\n")
     for i, c in enumerate(campaigns, 1):
         icon = STATUS_ICON.get(c["status"], "❓")
-        budget = c.get("daily_budget") or c.get("lifetime_budget") or "—"
         print(f"  {icon} [{i}] {c['name']}")
-        print(f"       ID: {c['id']} | Objetivo: {c.get('objective', '—')} | Presupuesto: {budget}")
+        print(
+            f"       ID: {c['id']} | Objetivo: {c.get('objective', '—')} | "
+            f"Presupuesto: {fmt_budget(c)}"
+        )
 
     filename = "campaigns.json"
     with open(filename, "w", encoding="utf-8") as f:

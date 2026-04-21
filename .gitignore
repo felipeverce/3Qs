@@ -5,11 +5,14 @@ insights_*.json
 adsets_*.json
 ads_*.json
 
+# Credenciales
+.env
+.env.local
+
 # Python
 __pycache__/
 *.pyc
 *.pyo
-.env
 
 # OS
 .DS_Store

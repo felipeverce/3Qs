@@ -19,6 +19,32 @@ Access Token → Negocios → Campañas → Tipo de campaña → Análisis campa
 
 ---
 
+## 🤖 Automatización — NO le pidas al usuario que edite archivos ni pegue JSON
+
+Tú ejecutas todo. El usuario SOLO te da:
+1. El **Access Token** una vez (al inicio).
+2. El número de la opción que elige cuando le muestras listas (cuenta, campaña, adset).
+
+**En cada paso que requiera credenciales o IDs:**
+
+1. **Escribe o actualiza** el archivo `.env` en la raíz del proyecto con el valor que corresponda. Usa la tool `Edit` si el archivo ya existe (para no sobreescribir otras vars), o `Write` si no existe. Formato del `.env`:
+   ```
+   META_ACCESS_TOKEN=EAA...
+   AD_ACCOUNT_ID=act_123456789
+   CAMPAIGN_ID=123456789
+   ADSET_ID=123456789
+   DATE_PRESET=last_30d
+   ```
+2. **Ejecuta el script** con la tool `Bash` (`python scripts/fetch_*.py`).
+3. **Lee el JSON resultante** con la tool `Read` — NO le pidas al usuario que te lo pegue.
+4. Continúa el análisis a partir de ese JSON.
+
+> ⚠️ NUNCA le digas al usuario "edita este archivo", "exporta esta variable", o "pégame el JSON aquí". Tú lo haces todo con tus tools. El usuario solo conversa contigo.
+
+> ⚠️ Antes de ejecutar cualquier script por primera vez, verifica que `requests` está instalado. Si falta, ejecuta `pip install requests` automáticamente.
+
+---
+
 ## FASE 1: Obtener el Access Token
 
 Pide al usuario su **Access Token** de Meta. Si no lo tiene, guíalo:
@@ -37,19 +63,23 @@ Pide al usuario su **Access Token** de Meta. Si no lo tiene, guíalo:
 
 > ⚠️ El token de usuario expira. Para uso continuo, crear un **System User Token** en Business Manager → Configuración → Usuarios del sistema.
 
-Una vez tenga el token, dile que edite `ACCESS_TOKEN` en `scripts/fetch_businesses.py` y lo ejecute:
-```
-pip install requests
-python scripts/fetch_businesses.py
-```
+**Cuando el usuario te pegue el token en el chat:**
+
+1. Escribe/actualiza `.env` con `META_ACCESS_TOKEN=<token>` usando la tool `Write` o `Edit`.
+2. Si `requests` no está instalado, ejecuta `pip install requests`.
+3. Ejecuta `python scripts/fetch_businesses.py` con la tool `Bash`.
+4. Lee el archivo `businesses.json` generado con la tool `Read`.
+5. Muestra la lista al usuario (ver FASE 2).
+
+**NO le digas al usuario que exporte variables ni que edite archivos.** Tú haces todo.
 
 ---
 
 ## FASE 2: Seleccionar el negocio
 
-El script genera `businesses.json`. El usuario lo pega aquí.
+Ya generaste `businesses.json` y lo leíste con `Read` en la FASE 1.
 
-Muestra la lista así:
+Muestra la lista al usuario así:
 ```
 📋 Negocios disponibles:
   [1] Nombre del negocio (ID: 123456789)
@@ -60,18 +90,18 @@ Muestra la lista así:
   [2] act_987654321 — Otra cuenta ⚠️ Inactiva
 ```
 
-Pregunta: **"¿Cuál cuenta de anuncios quieres analizar?"**
+Pregunta: **"¿Cuál cuenta de anuncios quieres analizar?"** (dile que responda con el número).
 
 ---
 
 ## FASE 3: Seleccionar la campaña
 
-Con el `AD_ACCOUNT_ID` elegido, dile al usuario que edite `scripts/fetch_campaigns.py` con ese ID y lo ejecute:
-```
-python scripts/fetch_campaigns.py
-```
+Con la cuenta elegida, **tú**:
 
-El script genera `campaigns.json`. El usuario lo pega aquí.
+1. Actualizas `.env` con `AD_ACCOUNT_ID=act_...` (usa `Edit` para no tocar el token).
+2. Ejecutas `python scripts/fetch_campaigns.py` con `Bash`.
+3. Lees `campaigns.json` con `Read`.
+4. Muestras la lista al usuario.
 
 Muestra la lista así:
 ```
@@ -81,23 +111,24 @@ Muestra la lista así:
   ⚫ [3] Campaña archivada — ARCHIVED
 ```
 
-Pregunta: **"¿Cuál campaña quieres analizar?"**
+Pregunta: **"¿Cuál campaña quieres analizar?"** (responde con el número).
+
+Si el usuario no especificó el periodo, pregunta también: **"¿Qué periodo? (últimos 7, 14, 30 o 90 días)"**.
 
 ---
 
 ## FASE 4: Obtener los insights
 
-Con el `CAMPAIGN_ID` elegido, dile que edite `scripts/fetch_insights.py` con ese ID y lo ejecute:
-```
-python scripts/fetch_insights.py
-```
+Con la campaña elegida, **tú**:
 
-El script genera `insights_{campaign_id}_{periodo}.json` con:
-- Datos de la campaña
-- **Tipo detectado automáticamente** (`campaign_type`)
-- Todos los insights del periodo
-
-El usuario pega el JSON aquí. Procede con el análisis según el tipo.
+1. Actualizas `.env` con `CAMPAIGN_ID=...` y, si cambió, `DATE_PRESET=last_30d` (o el periodo elegido).
+2. Ejecutas `python scripts/fetch_insights.py` con `Bash`.
+3. Lees el archivo `insights_{campaign_id}_{periodo}_*.json` generado con `Read` (puedes usar `Glob` para encontrarlo si el timestamp es incierto).
+4. El JSON incluye:
+   - Datos de la campaña
+   - **Tipo detectado automáticamente** (`campaign_type`)
+   - Todos los insights del periodo
+5. Procede con el análisis según el tipo — NO le pidas al usuario que pegue nada.
 
 ---
 
@@ -471,12 +502,15 @@ Meta prueba todos los anuncios/ubicaciones activos en paralelo (fase de aprendiz
 
 ### 🗂️ Análisis de Conjuntos de Anuncios
 
-Cuando el usuario quiera ver el detalle por adset:
+Cuando el usuario quiera ver el detalle por adset, **tú**:
 
-1. Presenta los adsets ordenados por **resultado principal** (compras, leads, conversaciones, etc.)
-2. Compara métricas clave entre adsets: gasto, resultado, costo por resultado, frecuencia
-3. Aplica las mismas 3 Q's del tipo de campaña, pero al nivel del adset
-4. **Antes de recomendar pausar un adset**, verifica:
+1. Actualizas `.env` con `CAMPAIGN_ID=...` (ya debería estar de la FASE 4).
+2. Ejecutas `python scripts/fetch_adsets.py` con `Bash`.
+3. Lees `adsets_{campaign_id}.json` con `Read`.
+4. Presentas los adsets ordenados por **resultado principal** (compras, leads, conversaciones, etc.).
+5. Comparas métricas clave: gasto, resultado, costo por resultado, frecuencia.
+6. Aplicas las mismas 3 Q's del tipo de campaña, pero al nivel del adset.
+7. **Antes de recomendar pausar un adset**, verificas:
    - ¿El presupuesto es CBO? → Si es CBO, Meta ya está optimizando — no pauses sin evidencia sólida (mínimo 7 días de datos)
    - ¿El adset está en fase de aprendizaje? → Nunca pauses durante la fase de aprendizaje
    - ¿Qué porcentaje del presupuesto total representa? → Si representa <10% del gasto es señal de que Meta ya lo está depriorizando naturalmente
@@ -485,7 +519,13 @@ Cuando el usuario quiera ver el detalle por adset:
 
 ### 🎨 Análisis de Anuncios Individuales
 
-Cuando el usuario quiera ver el detalle por anuncio:
+Cuando el usuario quiera ver el detalle por anuncio, **tú**:
+
+1. Actualizas `.env` con `ADSET_ID=...` (del adset que el usuario eligió).
+2. Ejecutas `python scripts/fetch_ads.py` con `Bash`.
+3. Lees `ads_{adset_id}.json` con `Read`. El JSON ya trae `desglose_warnings` por anuncio y `spend_pct_of_adset`.
+
+Luego:
 
 1. Presenta los anuncios ordenados por **costo por resultado** dentro de su adset
 2. Compara: gasto, resultado, CPR, CTR, % video 3s, tiempo de video, frecuencia

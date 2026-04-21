@@ -28,7 +28,7 @@ Incluye análisis de **Efecto Desglose** para decisiones correctas a nivel de ad
 
 ## Requisitos
 
-- [Claude Code](https://claude.ai/code) v1.0.33 o posterior
+- [Claude Code](https://claude.ai/code)
 - Python 3.7+
 - Librería `requests`:
   ```bash
@@ -40,19 +40,7 @@ Incluye análisis de **Efecto Desglose** para decisiones correctas a nivel de ad
 
 ## Instalación
 
-### Como Plugin (recomendado)
-
-```bash
-claude --plugin-dir ./meta-campaign-analyzer
-```
-
-O instálalo permanentemente:
-
-```bash
-/plugin install <ruta-o-url>
-```
-
-### Manual (standalone)
+### Como skill personal
 
 Copia la carpeta `skills/meta-campaign-analyzer/` a tu directorio de skills:
 
@@ -60,39 +48,52 @@ Copia la carpeta `skills/meta-campaign-analyzer/` a tu directorio de skills:
 cp -r skills/meta-campaign-analyzer ~/.claude/skills/
 ```
 
+### Como plugin de Claude Code
+
+Usa el comando `/plugin` dentro de Claude Code para añadir este repo como plugin. El manifiesto está en `.claude-plugin/plugin.json`.
+
 ---
 
 ## Uso
 
-1. Abre Claude Code con el plugin activo
-2. Habla sobre cualquier campaña de Meta — Claude activará el skill automáticamente
-3. Sigue el flujo paso a paso:
+1. Abre Claude Code con el plugin/skill activo.
+2. Habla sobre cualquier campaña de Meta — Claude activará el skill automáticamente.
+3. **Pega tu Access Token** en el chat una sola vez. Claude:
+   - Lo guarda en `.env` automáticamente.
+   - Ejecuta los scripts por ti.
+   - Lee los JSON generados y te muestra los resultados.
+   - Te pide solo lo estrictamente necesario (qué cuenta, qué campaña, qué periodo).
 
-**Paso 1 — Obtener negocios:**
-```bash
-# Edita ACCESS_TOKEN en el script, luego:
-python scripts/fetch_businesses.py
-# Pega el JSON generado en Claude
+No tienes que editar archivos, exportar variables, ni copiar/pegar JSON. Todo es conversacional.
+
+### Archivo `.env`
+
+Claude gestiona este archivo solo, pero si quieres crearlo manualmente:
+
+```env
+META_ACCESS_TOKEN=EAA...tu_token_aqui
+# opcionales:
+AD_ACCOUNT_ID=act_123456789
+CAMPAIGN_ID=123456789
+ADSET_ID=123456789
+DATE_PRESET=last_30d
 ```
 
-**Paso 2 — Obtener campañas:**
-```bash
-# Edita ACCESS_TOKEN y AD_ACCOUNT_ID, luego:
-python scripts/fetch_campaigns.py
-# Pega el JSON generado en Claude
-```
+> `.env` está en `.gitignore` — no se commitea.
 
-**Paso 3 — Obtener insights:**
-```bash
-# Edita ACCESS_TOKEN y CAMPAIGN_ID, luego:
-python scripts/fetch_insights.py
-# Pega el JSON generado en Claude → análisis automático
-```
+### Ejecución manual (si prefieres usar los scripts por tu cuenta)
 
-**Opcional — Profundizar en adsets y anuncios:**
 ```bash
-python scripts/fetch_adsets.py   # Conjuntos de anuncios
-python scripts/fetch_ads.py      # Anuncios individuales
+pip install requests
+export META_ACCESS_TOKEN=EAA...
+python scripts/fetch_businesses.py              # → businesses.json
+export AD_ACCOUNT_ID=act_123456789
+python scripts/fetch_campaigns.py               # → campaigns.json
+export CAMPAIGN_ID=123456789
+python scripts/fetch_insights.py                # → insights_*.json
+python scripts/fetch_adsets.py                  # → adsets_<CAMPAIGN_ID>.json
+export ADSET_ID=123456789
+python scripts/fetch_ads.py                     # → ads_<ADSET_ID>.json
 ```
 
 ---
@@ -106,14 +107,13 @@ meta-campaign-analyzer/
 ├── skills/
 │   └── meta-campaign-analyzer/
 │       └── SKILL.md             # Lógica y metodología de análisis
-├── scripts/
-│   ├── fetch_businesses.py      # Paso 1: negocios y cuentas
-│   ├── fetch_campaigns.py       # Paso 2: campañas de una cuenta
-│   ├── fetch_insights.py        # Paso 3: métricas de una campaña
-│   ├── fetch_adsets.py          # Conjuntos de anuncios
-│   └── fetch_ads.py             # Anuncios individuales
-└── .claude/
-    └── launch.json              # Configuraciones para Claude Code
+└── scripts/
+    ├── _common.py               # Config, API helpers, paginación, retry
+    ├── fetch_businesses.py      # Paso 1: negocios y cuentas
+    ├── fetch_campaigns.py       # Paso 2: campañas de una cuenta
+    ├── fetch_insights.py        # Paso 3: métricas de una campaña
+    ├── fetch_adsets.py          # Conjuntos de anuncios
+    └── fetch_ads.py             # Anuncios individuales
 ```
 
 ---
