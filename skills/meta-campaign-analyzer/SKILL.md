@@ -129,11 +129,42 @@ Con la campaña elegida, **tú**:
    - Datos de la campaña
    - **Tipo detectado automáticamente** (`campaign_type`)
    - Todos los insights del periodo
-5. Procede con el análisis según el tipo — NO le pidas al usuario que pegue nada.
+5. **Antes de analizar**, pregunta al usuario su **objetivo de negocio** según el tipo:
+   - `ventas` → "¿Cuál es tu ROAS objetivo?"
+   - `cp_formularios` / `cp_sitio_web` → "¿Cuál es tu CPL (Costo por Lead) objetivo?"
+   - `interaccion` → "¿Cuál es tu Costo por Conversación objetivo?"
+   - `tiendas_fisicas` / `reconocimiento` → no aplica, salta directo al análisis.
+   Si el usuario no sabe, dale la fórmula rápida (sección 🎯 al inicio de FASE 5).
+6. Procede con el análisis según el tipo — NO le pidas al usuario que pegue nada.
 
 ---
 
 ## FASE 5: Análisis por tipo de campaña
+
+### 🎯 Antes de analizar — pedir el OBJETIVO del negocio
+
+Los benchmarks genéricos (ROAS >2x, CPL "depende del sector") no sirven — cada negocio tiene márgenes y economía distintos. **Antes de aplicar las 3 Q's, SIEMPRE pide al usuario su objetivo según el tipo de campaña:**
+
+| Tipo de campaña | Pregunta al usuario |
+|-----------------|---------------------|
+| 🛒 Ventas | **"¿Cuál es tu ROAS objetivo?"** (ej: 3x, 4x, 5x — depende de tu margen) |
+| 📋 CP Formularios / 🌐 CP Sitio Web | **"¿Cuál es tu CPL (Costo por Lead) objetivo?"** (ej: $5, $20, $100) |
+| 💬 Interacción / Mensajes | **"¿Cuál es tu Costo por Conversación objetivo?"** (ej: $2, $10) |
+| 🏪 Reconocimiento / Tiendas físicas | No aplica — evalúa por CPM y alcance vs periodos anteriores |
+
+Si el usuario **no sabe** su objetivo, ayúdalo con esta regla rápida:
+- **ROAS objetivo ≈ 1 / margen neto.** Si tu margen es 30%, necesitas ROAS ≥ 3.3x para empatar. Para ganar, apunta a **ROAS objetivo = (1 / margen) × 1.5** como mínimo.
+- **CPL objetivo ≈ Valor promedio del cliente × tasa de cierre × margen × 0.3.** Si cierras 20% de tus leads, con ticket de $500 y margen de 40%, un CPL de $12 o menos es saludable.
+
+Guarda el objetivo mentalmente (o anótalo en tu respuesta) y úsalo como **benchmark único** para la columna "Estado" de la tabla de métricas y para el diagnóstico del paso 1 (¿Qué pasó?).
+
+**Reglas de semáforo basadas en objetivo:**
+- ROAS ≥ objetivo → 🟢 bueno
+- ROAS ≥ 80% del objetivo → 🟡 cerca
+- ROAS < 80% del objetivo → 🔴 bajo
+- CPL ≤ objetivo → 🟢, ≤ 120% → 🟡, > 120% → 🔴 (misma lógica para costo por conversación)
+
+---
 
 ### 🛒 VENTAS
 
@@ -145,7 +176,7 @@ Con la campaña elegida, **tú**:
 | Presupuesto | daily_budget / lifetime_budget | — | — |
 | Importe gastado | spend | — | — |
 | Valor de conversión de compras | action_values[purchase] | — | — |
-| ROAS | purchase_roas | >2x mín / >4x bueno | 🟢/🟡/🔴 |
+| ROAS | purchase_roas | **ROAS objetivo del usuario** | 🟢/🟡/🔴 |
 | Resultados (Compras) | actions[purchase] | — | — |
 | Costo por resultado | cost_per_action_type[purchase] | — | — |
 | % Compras / Visitas p.d. | compras / landing_page_view | — | 🟢/🔴 |
@@ -191,10 +222,10 @@ El paso con el % más bajo es donde se pierde más audiencia → ahí está la o
 **Análisis con las 3 Q's (solo Ventas):**
 
 #### 1️⃣ ¿Qué pasó?
-Presenta los resultados principales de la campaña:
+Presenta los resultados principales de la campaña comparándolos contra el **ROAS objetivo** que te dio el usuario:
 - Importe gastado
 - Valor de conversión de compras (total generado)
-- ROAS (¿está por encima o debajo del benchmark?)
+- **ROAS actual vs ROAS objetivo** → calcula la diferencia (ej: "ROAS 2.1x vs objetivo 4x → 47% por debajo del objetivo 🔴")
 - Número de compras
 - Costo por compra
 
@@ -225,8 +256,9 @@ Define acciones concretas ordenadas por urgencia según los problemas encontrado
 
 | Problema detectado | Acción recomendada |
 |--------------------|--------------------|
-| ROAS <2x | Revisar margen/precio, reducir presupuesto o pausar |
-| ROAS 2x–4x | Optimizar el paso del embudo con % más bajo |
+| ROAS < 80% del objetivo | Revisar margen/precio, pausar o reducir presupuesto; auditar urgente el embudo |
+| ROAS entre 80% y 100% del objetivo | Optimizar el paso del embudo con % más bajo — estás cerca, no pauses |
+| ROAS ≥ objetivo | ✅ Considerar escalar presupuesto (20% cada 3 días) |
 | % Compras/Pagos <50% | Simplificar checkout, reducir campos, agregar métodos de pago |
 | CTR saliente <1% | Testear nuevos creativos (gancho diferente, oferta más clara) |
 | % Video 3s <15% | Cambiar los primeros 3 segundos del video |
@@ -266,10 +298,10 @@ Define acciones concretas ordenadas por urgencia según los problemas encontrado
 **Análisis con las 3 Q's (Interacción):**
 
 #### 1️⃣ ¿Qué pasó?
-Presenta los resultados principales:
+Presenta los resultados principales comparándolos contra el **costo por conversación objetivo** que te dio el usuario:
 - Importe gastado
 - Conversaciones iniciadas (resultado principal)
-- Costo por conversación
+- **Costo por conversación actual vs objetivo** (ej: "$3.50 vs objetivo $2 → 75% más caro 🔴")
 
 #### 2️⃣ ¿Por qué pasó?
 Diagnostica con las métricas secundarias:
@@ -302,7 +334,7 @@ Diagnostica con las métricas secundarias:
 | Presupuesto | daily_budget / lifetime_budget | — | — |
 | Importe gastado | spend | — | — |
 | Leads obtenidos | actions[lead] | — | — |
-| Costo por lead (CPL) | cost_per_action_type[lead] | Depende del sector | — |
+| Costo por lead (CPL) | cost_per_action_type[lead] | **CPL objetivo del usuario** | 🟢/🟡/🔴 |
 | Tasa de conversión (Leads / Clics únicos) | actions[lead] / unique_clicks | >30% bueno | 🟢/🔴 |
 | Clics únicos en el enlace | unique_clicks | — | — |
 | Costo por clic único | cost_per_unique_click | — | — |
@@ -323,9 +355,10 @@ Diagnostica con las métricas secundarias:
 **Análisis con las 3 Q's (CP Formularios):**
 
 #### 1️⃣ ¿Qué pasó?
+Compara siempre contra el **CPL objetivo** que te dio el usuario:
 - Importe gastado
 - Clientes Potenciales (leads del formulario de Meta)
-- Costo por Cliente Potencial
+- **CPL actual vs objetivo** (ej: "$28 vs objetivo $15 → 87% por encima 🔴")
 
 #### 2️⃣ ¿Por qué pasó?
 | Métrica secundaria | Benchmark | Señal si está mal |
@@ -357,7 +390,7 @@ Diagnostica con las métricas secundarias:
 | Presupuesto | daily_budget / lifetime_budget | — | — |
 | Importe gastado | spend | — | — |
 | Leads obtenidos | actions[lead] | — | — |
-| Costo por lead (CPL) | cost_per_action_type[lead] | Depende del sector | — |
+| Costo por lead (CPL) | cost_per_action_type[lead] | **CPL objetivo del usuario** | 🟢/🟡/🔴 |
 | Tasa de conversión (Leads / Visitas p.d.) | actions[lead] / landing_page_view | >10% bueno | 🟢/🔴 |
 | Visitas a página de destino | actions[landing_page_view] | — | — |
 | Costo por visita a p.d. | spend / landing_page_view | — | — |
@@ -381,9 +414,10 @@ Diagnostica con las métricas secundarias:
 **Análisis con las 3 Q's (CP Sitio Web):**
 
 #### 1️⃣ ¿Qué pasó?
+Compara siempre contra el **CPL objetivo** que te dio el usuario:
 - Importe gastado
 - Clientes Potenciales (leads del sitio web)
-- Costo por Cliente Potencial
+- **CPL actual vs objetivo** (ej: "$45 vs objetivo $30 → 50% por encima 🔴")
 
 #### 2️⃣ ¿Por qué pasó?
 | Métrica secundaria | Benchmark | Señal si está mal |
