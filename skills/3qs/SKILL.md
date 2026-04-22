@@ -1,5 +1,5 @@
 ---
-name: meta-campaign-analyzer
+name: 3qs
 description: >
   Skill para conectarse a la Meta Marketing API y analizar campañas publicitarias de Facebook e Instagram.
   Úsala SIEMPRE que el usuario mencione: campañas de Meta, Facebook Ads, Instagram Ads, anuncios de Meta,

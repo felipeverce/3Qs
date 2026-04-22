@@ -40,17 +40,26 @@ Incluye análisis de **Efecto Desglose** para decisiones correctas a nivel de ad
 
 ## Instalación
 
-### Como skill personal
+### Opción recomendada — Plugin (funciona en CLI y en la extensión de VS Code)
 
-Copia la carpeta `skills/meta-campaign-analyzer/` a tu directorio de skills:
+Dentro de Claude Code ejecuta estos dos comandos:
 
-```bash
-cp -r skills/meta-campaign-analyzer ~/.claude/skills/
+```
+/plugin marketplace add soyalonsoai/meta-campaign-analyzer
+/plugin install 3qs@3qs
 ```
 
-### Como plugin de Claude Code
+O usa la UI interactiva: `/plugin` → pestaña **Discover** → seleccionar **3qs** e instalar.
 
-Usa el comando `/plugin` dentro de Claude Code para añadir este repo como plugin. El manifiesto está en `.claude-plugin/plugin.json`.
+> La extensión de VS Code **solo** admite instalación vía plugin — no detecta skills copiados manualmente a `~/.claude/skills/`.
+
+### Opción alternativa — Skill personal (solo CLI)
+
+Copia la carpeta `skills/3qs/` a tu directorio de skills:
+
+```bash
+cp -r skills/3qs ~/.claude/skills/
+```
 
 ---
 
@@ -103,9 +112,10 @@ python scripts/fetch_ads.py                     # → ads_<ADSET_ID>.json
 ```
 meta-campaign-analyzer/
 ├── .claude-plugin/
-│   └── plugin.json              # Manifiesto del plugin
+│   ├── plugin.json              # Manifiesto del plugin
+│   └── marketplace.json         # Manifiesto del marketplace
 ├── skills/
-│   └── meta-campaign-analyzer/
+│   └── 3qs/
 │       └── SKILL.md             # Lógica y metodología de análisis
 └── scripts/
     ├── _common.py               # Config, API helpers, paginación, retry
