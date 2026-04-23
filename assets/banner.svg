@@ -1,34 +1,85 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 400" width="1600" height="400">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2e3848"/>
-      <stop offset="100%" stop-color="#1a2030"/>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"  stop-color="#74fbfb">
+        <animate attributeName="stop-color"
+                 values="#74fbfb;#8dd0df;#376290;#8dd0df;#74fbfb"
+                 dur="14s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" stop-color="#8dd0df">
+        <animate attributeName="stop-color"
+                 values="#8dd0df;#376290;#74fbfb;#376290;#8dd0df"
+                 dur="14s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#376290">
+        <animate attributeName="stop-color"
+                 values="#376290;#74fbfb;#8dd0df;#74fbfb;#376290"
+                 dur="14s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
-    <linearGradient id="cyan" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#74fbfb"/>
-      <stop offset="100%" stop-color="#8dd0df"/>
+
+    <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"  stop-color="#F5F6F7" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#F5F6F7" stop-opacity="0.15"/>
     </linearGradient>
+
+    <linearGradient id="wave2Grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"  stop-color="#F5F6F7" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#F5F6F7" stop-opacity="0.08"/>
+    </linearGradient>
+
+    <clipPath id="rounded">
+      <rect width="1600" height="400" rx="20"/>
+    </clipPath>
   </defs>
 
-  <rect width="1600" height="400" rx="20" fill="url(#bg)"/>
+  <g clip-path="url(#rounded)">
+    <!-- Animated background -->
+    <rect width="1600" height="400" fill="url(#bgGrad)"/>
 
-  <g transform="translate(120, 210)">
-    <text font-family="'Inter','Segoe UI','Helvetica Neue',sans-serif"
-          font-size="150" font-weight="800"
-          fill="url(#cyan)" letter-spacing="-6">3Q<tspan fill="#F5F6F7">'</tspan>s</text>
+    <!-- Soft glow blobs drifting -->
+    <circle cx="300" cy="150" r="180" fill="#F5F6F7" opacity="0.08">
+      <animate attributeName="cx" values="300;500;300" dur="18s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="150;220;150" dur="22s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1300" cy="240" r="200" fill="#74fbfb" opacity="0.12">
+      <animate attributeName="cx" values="1300;1100;1300" dur="20s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="240;180;240" dur="24s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Title -->
+    <text x="800" y="210" text-anchor="middle"
+          font-family="'Inter','Segoe UI','Helvetica Neue',sans-serif"
+          font-size="130" font-weight="800"
+          fill="#F5F6F7" letter-spacing="-4">
+      3 Q's
+    </text>
+
+    <!-- Subtitle -->
+    <text x="800" y="260" text-anchor="middle"
+          font-family="'Inter','Segoe UI','Helvetica Neue',sans-serif"
+          font-size="26" font-weight="500"
+          fill="#F5F6F7" opacity="0.92" letter-spacing="0.5">
+      Meta Campaign Analyzer · Plugin para Claude Code
+    </text>
+
+    <!-- Bottom waves -->
+    <path fill="url(#waveGrad)"
+          d="M 0,330 Q 400,300 800,340 T 1600,330 L 1600,400 L 0,400 Z">
+      <animate attributeName="d"
+               values="M 0,330 Q 400,300 800,340 T 1600,330 L 1600,400 L 0,400 Z;
+                       M 0,340 Q 400,370 800,330 T 1600,350 L 1600,400 L 0,400 Z;
+                       M 0,330 Q 400,300 800,340 T 1600,330 L 1600,400 L 0,400 Z"
+               dur="10s" repeatCount="indefinite"/>
+    </path>
+
+    <path fill="url(#wave2Grad)"
+          d="M 0,360 Q 400,340 800,370 T 1600,360 L 1600,400 L 0,400 Z">
+      <animate attributeName="d"
+               values="M 0,360 Q 400,340 800,370 T 1600,360 L 1600,400 L 0,400 Z;
+                       M 0,370 Q 400,395 800,355 T 1600,375 L 1600,400 L 0,400 Z;
+                       M 0,360 Q 400,340 800,370 T 1600,360 L 1600,400 L 0,400 Z"
+               dur="12s" repeatCount="indefinite"/>
+    </path>
   </g>
-
-  <text x="128" y="280"
-        font-family="'Inter','Segoe UI','Helvetica Neue',sans-serif"
-        font-size="22" font-weight="400" fill="#F5F6F7" opacity="0.75" letter-spacing="0.5">
-    Meta Campaign Analyzer
-  </text>
-
-  <line x1="128" y1="308" x2="188" y2="308" stroke="#74fbfb" stroke-width="2"/>
-
-  <text x="128" y="105"
-        font-family="'Inter','Segoe UI',sans-serif"
-        font-size="13" font-weight="600" fill="#74fbfb" letter-spacing="6">
-    CLAUDE CODE · PLUGIN
-  </text>
 </svg>
