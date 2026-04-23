@@ -1,11 +1,16 @@
 ---
 name: 3qs
 description: >
-  Skill para conectarse a la Meta Marketing API y analizar campañas publicitarias de Facebook e Instagram.
-  Úsala SIEMPRE que el usuario mencione: campañas de Meta, Facebook Ads, Instagram Ads, anuncios de Meta,
-  ROAS, CPM, CPC, adsets, creativos, presupuesto de anuncios, o pida analizar rendimiento de publicidad digital.
-  También úsala cuando el usuario quiera configurar una app de Meta, obtener un access token, conectarse
-  a la Marketing API, o generar reportes/recomendaciones de campañas publicitarias.
+  Analiza campañas publicitarias de Meta (Facebook Ads e Instagram Ads) usando la metodología de las 3 Q's
+  (¿Qué pasó? / ¿Por qué pasó? / ¿Qué haremos?) y benchmarks semáforo (🔴/🟡/🟢) sobre datos extraídos
+  de la Meta Marketing API. Úsala SIEMPRE que el usuario pida: analizar o revisar campañas de Meta/Facebook/Instagram;
+  diagnosticar por qué una campaña no convierte; evaluar ROAS, CPL, CPM, CPC, CTR, frecuencia, costo por
+  conversación o costo por resultado; revisar adsets, anuncios o creativos; auditar el embudo de ventas
+  (impresiones → clics → landing → checkout → compra); detectar fatiga de audiencia; recomendar qué pausar,
+  escalar u optimizar; o pida un reporte/recomendaciones de campañas de Meta. Actívala incluso si el usuario
+  no dice "Meta" explícitamente pero habla de Facebook Ads, Instagram Ads, Business Manager, formularios
+  instantáneos, campañas a WhatsApp, Advantage+, o píxel de Meta. No usar para Google Ads, TikTok Ads,
+  LinkedIn Ads ni para crear campañas — solo análisis y diagnóstico de campañas Meta existentes.
 ---
 
 # Meta Campaign Analyzer
@@ -200,24 +205,24 @@ Guarda el objetivo mentalmente (o anótalo en tu respuesta) y úsalo como **benc
 | Costo por resultado | cost_per_action_type[purchase] | — | — |
 | % Compras / Visitas p.d. | compras / landing_page_view | — | 🟢/🔴 |
 | Valor de conversión promedio | action_values[purchase] / compras | — | — |
-| % Compras / Pagos iniciados | compras / initiate_checkout | >50% bueno | 🟢/🔴 |
+| % Compras / Pagos iniciados | compras / initiate_checkout | 🔴 <10% / 🟡 10-30% / 🟢 >30% | 🟢/🟡/🔴 |
 | Pagos iniciados | actions[initiate_checkout] | — | — |
 | Costo por pago iniciado | cost_per_action_type[initiate_checkout] | — | — |
-| *(Si hay datos)* % Checkout / Carritos | pagos / add_to_cart | >40% bueno | 🟢/🔴 |
+| *(Si hay datos)* % Checkout / Carritos | pagos / add_to_cart | 🔴 <30% / 🟡 30-50% / 🟢 >50% | 🟢/🟡/🔴 |
 | *(Si hay datos)* Artículos al carrito | actions[add_to_cart] | — | — |
 | *(Si hay datos)* Costo por carrito | cost_per_action_type[add_to_cart] | — | — |
-| *(Si hay datos)* % Carritos / Ver contenido | add_to_cart / view_content | >20% bueno | 🟢/🔴 |
+| *(Si hay datos)* % Carritos / Ver contenido | add_to_cart / view_content | 🔴 <10% / 🟡 10-20% / 🟢 >20% | 🟢/🟡/🔴 |
 | Visualizaciones de contenido | actions[view_content] | — | — |
 | Costo por visualización de contenido | cost_per_action_type[view_content] | — | — |
-| % Ver contenido / Visitas p.d. | view_content / landing_page_view | >60% bueno | 🟢/🔴 |
+| % Ver contenido / Visitas p.d. | view_content / landing_page_view | 🔴 <60% / 🟡 60-100% / 🟢 >100% | 🟢/🟡/🔴 |
 | Visitas a página de destino | actions[landing_page_view] | — | — |
 | Costo por visita a p.d. | spend / landing_page_view | — | — |
-| % Visitas / Clics salientes | landing_page_view / outbound_clicks | >70% bueno | 🟢/🔴 |
+| % Visitas / Clics salientes | landing_page_view / outbound_clicks | 🔴 <50% / 🟡 50-70% / 🟢 >70% | 🟢/🟡/🔴 |
 | Clics salientes | outbound_clicks | — | — |
-| % CTR saliente | outbound_clicks_ctr | >1% bueno | 🟢/🔴 |
+| % CTR saliente | outbound_clicks_ctr | 🔴 <1% / 🟡 1-2% / 🟢 >2% | 🟢/🟡/🔴 |
 | Costo por clic saliente | cost_per_outbound_click | — | — |
-| % Reproducciones 3s / Impresiones | actions[video_view] / impressions | >15% bueno | 🟢/🔴 |
-| Tiempo promedio de reproducción | video_avg_time_watched_actions | >5s bueno | 🟢/🔴 |
+| % Reproducciones 3s / Impresiones | actions[video_view] / impressions | 🔴 <20% / 🟡 20-30% / 🟢 >30% | 🟢/🟡/🔴 |
+| Tiempo promedio de reproducción | video_avg_time_watched_actions | 🔴 <3s / 🟡 3-6s / 🟢 >6s | 🟢/🟡/🔴 |
 | Frecuencia | frequency | <3 ideal / >5 saturado | 🟢/🟡/🔴 |
 | Alcance | reach | — | — |
 | Costo por mil cuentas alcanzadas | spend / reach * 1000 | — | — |
@@ -254,16 +259,16 @@ Diagnostica usando el embudo y los indicadores de calidad:
 **Embudo de conversión** — compara cada porcentaje y señala el paso con el % más bajo:
 | Paso del embudo | Benchmark | Señal si está mal |
 |-----------------|-----------|-------------------|
-| % Compras / Pagos iniciados | >50% | Fricción en el proceso de pago |
-| % Checkout / Carritos *(si hay datos)* | >40% | Abandono en carrito |
-| % Carritos / Ver contenido *(si hay datos)* | >20% | Producto poco atractivo |
-| % Ver contenido / Visitas p.d. | >60% | Landing page no convierte |
-| % Visitas / Clics salientes | >70% | Página lenta o mala UX |
-| CTR saliente | >1% | Creativo débil, no genera clics |
+| % Compras / Pagos iniciados | 🔴 <10% / 🟡 10-30% / 🟢 >30% | Fricción en el proceso de pago |
+| % Checkout / Carritos *(si hay datos)* | 🔴 <30% / 🟡 30-50% / 🟢 >50% | Abandono en carrito |
+| % Carritos / Ver contenido *(si hay datos)* | 🔴 <10% / 🟡 10-20% / 🟢 >20% | Producto poco atractivo |
+| % Ver contenido / Visitas p.d. | 🔴 <60% / 🟡 60-100% / 🟢 >100% | Landing page no convierte |
+| % Visitas / Clics salientes | 🔴 <50% / 🟡 50-70% / 🟢 >70% | Página lenta o mala UX |
+| CTR saliente | 🔴 <1% / 🟡 1-2% / 🟢 >2% | Creativo débil, no genera clics |
 
 **Creativos y alcance:**
-- % Reproducciones 3s / Impresiones (<15% → el gancho no engancha)
-- Tiempo promedio de reproducción (<5s → el contenido no retiene)
+- % Reproducciones 3s / Impresiones — 🔴 <20% / 🟡 20-30% / 🟢 >30% (<20% → el gancho no engancha)
+- Tiempo promedio de reproducción — 🔴 <3s / 🟡 3-6s / 🟢 >6s (<3s → el contenido no retiene)
 - Frecuencia (>5 → fatiga de anuncio, audiencia saturada)
 - CPM (comparar vs campañas anteriores para detectar competencia en subasta)
 
@@ -278,13 +283,13 @@ Define acciones concretas ordenadas por urgencia según los problemas encontrado
 | ROAS < 80% del objetivo | Revisar margen/precio, pausar o reducir presupuesto; auditar urgente el embudo |
 | ROAS entre 80% y 100% del objetivo | Optimizar el paso del embudo con % más bajo — estás cerca, no pauses |
 | ROAS ≥ objetivo | ✅ Considerar escalar presupuesto (20% cada 3 días) |
-| % Compras/Pagos <50% | Simplificar checkout, reducir campos, agregar métodos de pago |
-| CTR saliente <1% | Testear nuevos creativos (gancho diferente, oferta más clara) |
-| % Video 3s <15% | Cambiar los primeros 3 segundos del video |
-| Tiempo video <5s | Acortar video o mejorar el gancho inicial |
+| % Compras/Pagos <30% | Simplificar checkout, reducir campos, agregar métodos de pago |
+| CTR saliente <2% | Testear nuevos creativos (gancho diferente, oferta más clara) |
+| % Video 3s <30% | Cambiar los primeros 3 segundos del video |
+| Tiempo video <6s | Acortar video o mejorar el gancho inicial |
 | Frecuencia >5 | Ampliar audiencia o rotar creativos |
 | % Visitas/Clics <70% | Revisar velocidad de carga y UX de la landing page |
-| % Ver contenido/Visitas <60% | Mejorar propuesta de valor en landing page |
+| % Ver contenido/Visitas <100% | Mejorar propuesta de valor en landing page |
 
 ---
 
@@ -297,12 +302,12 @@ Define acciones concretas ordenadas por urgencia según los problemas encontrado
 | Importe gastado | spend | — | — |
 | Conversaciones iniciadas | actions[messaging_conversation_started] | — | — |
 | Costo por conversación | cost_per_action_type[messaging_conversation_started] | — | — |
-| Tasa de conversión a Mensajes | conversaciones / unique_clicks | >50% bueno | 🟢/🔴 |
+| Tasa de conversión a Mensajes | conversaciones / unique_clicks | 🔴 <30% / 🟡 30-50% / 🟢 >50% | 🟢/🟡/🔴 |
 | Clics únicos en el enlace | unique_clicks | — | — |
 | Costo por clic único | cost_per_unique_click | — | — |
-| CTR único (enlace) | unique_ctr | >2% bueno | 🟢/🔴 |
-| % Reproducciones 3s / Impresiones | actions[video_view] / impressions | >20% bueno | 🟢/🔴 |
-| Tiempo promedio de reproducción | video_avg_time_watched_actions | >5s bueno | 🟢/🔴 |
+| CTR único (enlace) | unique_ctr | 🔴 <1% / 🟡 1-2% / 🟢 >2% | 🟢/🟡/🔴 |
+| % Reproducciones 3s / Impresiones | actions[video_view] / impressions | 🔴 <20% / 🟡 20-30% / 🟢 >30% | 🟢/🟡/🔴 |
+| Tiempo promedio de reproducción | video_avg_time_watched_actions | 🔴 <3s / 🟡 3-6s / 🟢 >6s | 🟢/🟡/🔴 |
 | Frecuencia | frequency | <3 ideal / >5 saturado | 🟢/🟡/🔴 |
 | Alcance | reach | — | — |
 | Costo por mil cuentas alcanzadas | spend / reach * 1000 | — | — |
@@ -326,10 +331,10 @@ Presenta los resultados principales comparándolos contra el **costo por convers
 Diagnostica con las métricas secundarias:
 | Métrica secundaria | Benchmark | Señal si está mal |
 |--------------------|-----------|-------------------|
-| Tasa de conversión a Mensajes | >50% | El anuncio atrae clics pero no convierte a mensajes — mejorar el CTA o la propuesta |
-| CTR único (enlace) | >2% | El creativo no genera interés suficiente |
-| % Reproducciones 3s / Impresiones | >20% | El gancho del video no engancha |
-| Tiempo promedio de reproducción | >5-7s | El contenido no retiene — mejorar guión y edición |
+| Tasa de conversión a Mensajes | 🔴 <30% / 🟡 30-50% / 🟢 >50% | El anuncio atrae clics pero no convierte a mensajes — mejorar el CTA o la propuesta |
+| CTR único (enlace) | 🔴 <1% / 🟡 1-2% / 🟢 >2% | El creativo no genera interés suficiente |
+| % Reproducciones 3s / Impresiones | 🔴 <20% / 🟡 20-30% / 🟢 >30% | El gancho del video no engancha |
+| Tiempo promedio de reproducción | 🔴 <3s / 🟡 3-6s / 🟢 >6s | El contenido no retiene — mejorar guión y edición |
 | Frecuencia (últimos 7 días) | <3-5 | Por encima → audiencia saturada |
 | CPM | contexto | CPM alto → audiencia pequeña o baja calidad del anuncio |
 
@@ -338,8 +343,8 @@ Diagnostica con las métricas secundarias:
 |--------------------|--------------------|
 | Tasa de conversión a Mensajes <50% | Ser más específico en el CTA: invitar a chatear con la empresa |
 | CTR único <2% | Mejorar el creativo (imagen/video, copy, oferta) |
-| % Video 3s <20% | Mejorar el gancho de los primeros 3 segundos |
-| Tiempo video <5s | Mejorar guión y edición del video |
+| % Video 3s <30% | Mejorar el gancho de los primeros 3 segundos |
+| Tiempo video <6s | Mejorar guión y edición del video |
 | Frecuencia >3-5 | Agregar nuevos anuncios / rotar creativos |
 | CPM elevado | Usar públicos más grandes y mejorar calidad del anuncio |
 
@@ -354,12 +359,12 @@ Diagnostica con las métricas secundarias:
 | Importe gastado | spend | — | — |
 | Leads obtenidos | actions[lead] | — | — |
 | Costo por lead (CPL) | cost_per_action_type[lead] | **CPL objetivo del usuario** | 🟢/🟡/🔴 |
-| Tasa de conversión (Leads / Clics únicos) | actions[lead] / unique_clicks | >30% bueno | 🟢/🔴 |
+| Tasa de conversión (Leads / Clics únicos) | actions[lead] / unique_clicks | 🔴 <30% / 🟡 30-50% / 🟢 >50% | 🟢/🟡/🔴 |
 | Clics únicos en el enlace | unique_clicks | — | — |
 | Costo por clic único | cost_per_unique_click | — | — |
-| CTR único (enlace) | unique_ctr | >1-1.5% bueno | 🟢/🔴 |
-| % Reproducciones 3s / Impresiones | actions[video_view] / impressions | >20% bueno | 🟢/🔴 |
-| Tiempo promedio de reproducción | video_avg_time_watched_actions | >5s bueno | 🟢/🔴 |
+| CTR único (enlace) | unique_ctr | 🔴 <1% / 🟡 1-2% / 🟢 >2% | 🟢/🟡/🔴 |
+| % Reproducciones 3s / Impresiones | actions[video_view] / impressions | 🔴 <20% / 🟡 20-30% / 🟢 >30% | 🟢/🟡/🔴 |
+| Tiempo promedio de reproducción | video_avg_time_watched_actions | 🔴 <3s / 🟡 3-6s / 🟢 >6s | 🟢/🟡/🔴 |
 | Frecuencia | frequency | <3 ideal / >5 saturado | 🟢/🟡/🔴 |
 | Alcance | reach | — | — |
 | Costo por mil cuentas alcanzadas | spend / reach * 1000 | — | — |
@@ -382,20 +387,20 @@ Compara siempre contra el **CPL objetivo** que te dio el usuario:
 #### 2️⃣ ¿Por qué pasó?
 | Métrica secundaria | Benchmark | Señal si está mal |
 |--------------------|-----------|-------------------|
-| Tasa de conversión (Leads / Clics únicos) | >30% | El formulario de Meta no convierte — simplificar preguntas, mejorar oferta |
-| CTR único (enlace) | >1-1.5% | El creativo no genera interés suficiente |
-| % Reproducciones 3s / Impresiones | >20% | El gancho del video no engancha |
-| Tiempo promedio de reproducción | >5-7s | El contenido no retiene |
+| Tasa de conversión (Leads / Clics únicos) | 🔴 <30% / 🟡 30-50% / 🟢 >50% | El formulario de Meta no convierte — simplificar preguntas, mejorar oferta |
+| CTR único (enlace) | 🔴 <1% / 🟡 1-2% / 🟢 >2% | El creativo no genera interés suficiente |
+| % Reproducciones 3s / Impresiones | 🔴 <20% / 🟡 20-30% / 🟢 >30% | El gancho del video no engancha |
+| Tiempo promedio de reproducción | 🔴 <3s / 🟡 3-6s / 🟢 >6s | El contenido no retiene |
 | Frecuencia (últimos 7 días) | <3-5 | Por encima → audiencia saturada |
 | CPM | contexto | CPM alto → audiencia pequeña o baja calidad del anuncio |
 
 #### 3️⃣ ¿Qué haremos?
 | Problema detectado | Acción recomendada |
 |--------------------|--------------------|
-| Tasa de conversión <30% | Simplificar el formulario de Meta (menos campos, mejor oferta) |
-| CTR único <1-1.5% | Mejorar el creativo (imagen/video, copy, propuesta de valor) |
-| % Video 3s <20% | Mejorar el gancho de los primeros 3 segundos |
-| Tiempo video <5s | Mejorar guión y edición del video |
+| Tasa de conversión <50% | Simplificar el formulario de Meta (menos campos, mejor oferta) |
+| CTR único <2% | Mejorar el creativo (imagen/video, copy, propuesta de valor) |
+| % Video 3s <30% | Mejorar el gancho de los primeros 3 segundos |
+| Tiempo video <6s | Mejorar guión y edición del video |
 | Frecuencia >3-5 | Agregar nuevos anuncios / rotar creativos |
 | CPM elevado | Usar públicos más grandes y mejorar calidad del anuncio |
 
@@ -410,15 +415,15 @@ Compara siempre contra el **CPL objetivo** que te dio el usuario:
 | Importe gastado | spend | — | — |
 | Leads obtenidos | actions[lead] | — | — |
 | Costo por lead (CPL) | cost_per_action_type[lead] | **CPL objetivo del usuario** | 🟢/🟡/🔴 |
-| Tasa de conversión (Leads / Visitas p.d.) | actions[lead] / landing_page_view | >10% bueno | 🟢/🔴 |
+| Tasa de conversión (Leads / Visitas p.d.) | actions[lead] / landing_page_view | 🔴 <10% / 🟡 10-20% / 🟢 >20% | 🟢/🟡/🔴 |
 | Visitas a página de destino | actions[landing_page_view] | — | — |
 | Costo por visita a p.d. | spend / landing_page_view | — | — |
-| % Visitas / Clics salientes | landing_page_view / outbound_clicks | >70-80% bueno | 🟢/🔴 |
+| % Visitas / Clics salientes | landing_page_view / outbound_clicks | 🔴 <50% / 🟡 50-70% / 🟢 >70% | 🟢/🟡/🔴 |
 | Clics salientes | outbound_clicks | — | — |
 | Costo por clic saliente | cost_per_outbound_click | — | — |
-| % CTR saliente | outbound_clicks_ctr | >1-1.5% bueno | 🟢/🔴 |
-| % Reproducciones 3s / Impresiones | actions[video_view] / impressions | >20% bueno | 🟢/🔴 |
-| Tiempo promedio de reproducción | video_avg_time_watched_actions | >5s bueno | 🟢/🔴 |
+| % CTR saliente | outbound_clicks_ctr | 🔴 <1% / 🟡 1-2% / 🟢 >2% | 🟢/🟡/🔴 |
+| % Reproducciones 3s / Impresiones | actions[video_view] / impressions | 🔴 <20% / 🟡 20-30% / 🟢 >30% | 🟢/🟡/🔴 |
+| Tiempo promedio de reproducción | video_avg_time_watched_actions | 🔴 <3s / 🟡 3-6s / 🟢 >6s | 🟢/🟡/🔴 |
 | Frecuencia | frequency | <3 ideal / >5 saturado | 🟢/🟡/🔴 |
 | Alcance | reach | — | — |
 | Costo por mil cuentas alcanzadas | spend / reach * 1000 | — | — |
@@ -441,22 +446,22 @@ Compara siempre contra el **CPL objetivo** que te dio el usuario:
 #### 2️⃣ ¿Por qué pasó?
 | Métrica secundaria | Benchmark | Señal si está mal |
 |--------------------|-----------|-------------------|
-| Tasa de conversión (Leads / Visitas p.d.) | >10% | La landing page no convierte — optimizar formulario/oferta del sitio |
-| % Visitas / Clics salientes | >70-80% | La página carga lento o tiene mala UX — optimizar velocidad |
-| CTR saliente | >1-1.5% | El creativo no genera interés suficiente |
-| % Reproducciones 3s / Impresiones | >20% | El gancho del video no engancha |
-| Tiempo promedio de reproducción | >5-7s | El contenido no retiene |
+| Tasa de conversión (Leads / Visitas p.d.) | 🔴 <10% / 🟡 10-20% / 🟢 >20% | La landing page no convierte — optimizar formulario/oferta del sitio |
+| % Visitas / Clics salientes | 🔴 <50% / 🟡 50-70% / 🟢 >70% | La página carga lento o tiene mala UX — optimizar velocidad |
+| CTR saliente | 🔴 <1% / 🟡 1-2% / 🟢 >2% | El creativo no genera interés suficiente |
+| % Reproducciones 3s / Impresiones | 🔴 <20% / 🟡 20-30% / 🟢 >30% | El gancho del video no engancha |
+| Tiempo promedio de reproducción | 🔴 <3s / 🟡 3-6s / 🟢 >6s | El contenido no retiene |
 | Frecuencia (últimos 7 días) | <3-5 | Por encima → audiencia saturada |
 | CPM | contexto | CPM alto → audiencia pequeña o baja calidad del anuncio |
 
 #### 3️⃣ ¿Qué haremos?
 | Problema detectado | Acción recomendada |
 |--------------------|--------------------|
-| Tasa de conversión <10% | Optimizar el sitio web: formulario más simple, mejor oferta, CTA claro |
+| Tasa de conversión <20% | Optimizar el sitio web: formulario más simple, mejor oferta, CTA claro |
 | % Visitas/Clics <70% | Reducir la velocidad de carga de la landing page |
-| CTR saliente <1-1.5% | Mejorar el creativo (copy, imagen/video, propuesta de valor) |
-| % Video 3s <20% | Mejorar el gancho de los primeros 3 segundos |
-| Tiempo video <5s | Mejorar guión y edición del video |
+| CTR saliente <2% | Mejorar el creativo (copy, imagen/video, propuesta de valor) |
+| % Video 3s <30% | Mejorar el gancho de los primeros 3 segundos |
+| Tiempo video <6s | Mejorar guión y edición del video |
 | Frecuencia >3-5 | Agregar nuevos anuncios / rotar creativos |
 | CPM elevado | Usar públicos más grandes y mejorar calidad del anuncio |
 
@@ -475,9 +480,9 @@ Compara siempre contra el **CPL objetivo** que te dio el usuario:
 | Costo por 1,000 personas alcanzadas | spend / reach * 1000 | — | — |
 | Clics únicos en el enlace | unique_clicks | — | — |
 | Costo por clic único | cost_per_unique_click | — | — |
-| CTR único (enlace) | unique_ctr | >0.5% bueno | 🟢/🔴 |
-| % Reproducciones 3s / Impresiones | actions[video_view] / impressions | >20% bueno | 🟢/🔴 |
-| Tiempo promedio de reproducción | video_avg_time_watched_actions | >5s bueno | 🟢/🔴 |
+| CTR único (enlace) | unique_ctr | 🔴 <1% / 🟡 1-2% / 🟢 >2% | 🟢/🟡/🔴 |
+| % Reproducciones 3s / Impresiones | actions[video_view] / impressions | 🔴 <20% / 🟡 20-30% / 🟢 >30% | 🟢/🟡/🔴 |
+| Tiempo promedio de reproducción | video_avg_time_watched_actions | 🔴 <3s / 🟡 3-6s / 🟢 >6s | 🟢/🟡/🔴 |
 | Frecuencia | frequency | 2-4 ideal / >5 saturado | 🟢/🟡/🔴 |
 | Alcance | reach | — | — |
 | Impresiones | impressions | — | — |
@@ -498,16 +503,16 @@ Compara siempre contra el **CPL objetivo** que te dio el usuario:
 #### 2️⃣ ¿Por qué pasó?
 | Métrica secundaria | Benchmark | Señal si está mal |
 |--------------------|-----------|-------------------|
-| % Reproducciones 3s / Impresiones | >20% | El gancho no engancha — la audiencia no se detiene |
-| Tiempo promedio de reproducción | >5-7s | El contenido no retiene — el mensaje no llega |
+| % Reproducciones 3s / Impresiones | 🔴 <20% / 🟡 20-30% / 🟢 >30% | El gancho no engancha — la audiencia no se detiene |
+| Tiempo promedio de reproducción | 🔴 <3s / 🟡 3-6s / 🟢 >6s | El contenido no retiene — el mensaje no llega |
 | Frecuencia (últimos 7 días) | 2-4 ideal / >5 saturado | Por encima → audiencia ya vio demasiado el anuncio |
 | CPM | contexto | CPM alto → audiencia pequeña o baja relevancia del anuncio |
 
 #### 3️⃣ ¿Qué haremos?
 | Problema detectado | Acción recomendada |
 |--------------------|--------------------|
-| % Video 3s <20% | Mejorar el gancho de los primeros 3 segundos |
-| Tiempo video <5s | Mejorar guiones y edición del video |
+| % Video 3s <30% | Mejorar el gancho de los primeros 3 segundos |
+| Tiempo video <6s | Mejorar guiones y edición del video |
 | Frecuencia >3-5 | Agregar nuevos anuncios / rotar creativos |
 | CPM elevado | Usar públicos más grandes y mejorar calidad del anuncio |
 
