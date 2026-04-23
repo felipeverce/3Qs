@@ -17,10 +17,9 @@
 
 <p>
   <a href="#-instalación">Instalar</a> ·
-  <a href="#-cómo-funciona">Cómo funciona</a> ·
   <a href="#-metodología-3-qs">Metodología</a> ·
   <a href="#-tipos-de-campaña-soportados">Tipos soportados</a> ·
-  <a href="#-seguridad--anti-ban">Seguridad</a>
+  <a href="#-cómo-obtener-tu-access-token">Access Token</a>
 </p>
 
 </div>
@@ -133,41 +132,6 @@ cp -r skills/3qs ~/.claude/skills/
 
 ---
 
-## 🛠️ Ejecución manual (opcional)
-
-Si prefieres usar los scripts por fuera de Claude:
-
-```bash
-pip install requests
-export META_ACCESS_TOKEN=EAA...
-
-python scripts/fetch_businesses.py               # → businesses.json
-export AD_ACCOUNT_ID=act_123456789
-
-python scripts/fetch_campaigns.py                # → campaigns.json
-export CAMPAIGN_ID=123456789
-
-python scripts/fetch_insights.py                 # → insights_*.json
-python scripts/fetch_adsets.py                   # → adsets_<CAMPAIGN_ID>.json
-
-export ADSET_ID=123456789
-python scripts/fetch_ads.py                      # → ads_<ADSET_ID>.json
-```
-
-### Archivo `.env` (gestionado por Claude)
-
-```env
-META_ACCESS_TOKEN=EAA...
-AD_ACCOUNT_ID=act_123456789
-CAMPAIGN_ID=123456789
-ADSET_ID=123456789
-DATE_PRESET=last_30d
-```
-
-> `.env` está en `.gitignore` — nunca se commitea.
-
----
-
 ## 📁 Estructura del proyecto
 
 ```
@@ -188,19 +152,6 @@ DATE_PRESET=last_30d
 └── assets/
     └── banner.svg
 ```
-
----
-
-## 🛡️ Seguridad / Anti-ban
-
-Meta ha baneado cuentas legítimas (algunas con 16+ años) desde finales de 2025 al detectar patrones automatizados "no humanos" — aunque la API sea solo lectura. Este skill sigue prácticas seguras, pero hay decisiones que dependen de ti:
-
-- ✅ **System User Token**, no token personal (los personales expiran y su uso continuo es señal de riesgo).
-- ✅ **Developer App en una Business Manager SEPARADA** de tus cuentas de producción.
-- ✅ **Scopes mínimos:** `ads_read` + `business_management`. Nunca `ads_management` — este skill no modifica campañas.
-- 🚫 **Nada de MCPs no oficiales** ni scraping del Business Manager — el sistema *Andromeda* de Meta banea esa actividad al instante.
-
-Si operas este skill desde Claude Code, asegúrate de cargar las reglas anti-ban (template reutilizable: `templates/CLAUDE-meta-readonly.md` en el directorio padre).
 
 ---
 
