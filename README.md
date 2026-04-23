@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/banner.svg" alt="3 Q's — Meta Campaign Analyzer" width="100%"/>
+<img src="assets/banner.svg?v=3" alt="3 Q's — Meta Campaign Analyzer" width="100%"/>
 
 <br/>
 
