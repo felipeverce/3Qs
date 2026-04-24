@@ -559,46 +559,76 @@ Meta prueba todos los anuncios/ubicaciones activos en paralelo (fase de aprendiz
 
 ---
 
-### 🗂️ Análisis de Conjuntos de Anuncios
+### 🔁 Principio base de FASE 6 — mismo framework, distinto nivel
 
-Cuando el usuario quiera ver el detalle por adset, **tú**:
+El análisis de Conjuntos y Anuncios usa **exactamente la misma estructura** que el análisis de Campaña (FASE 5): la tabla de métricas del tipo de campaña correspondiente, los benchmarks semáforo 🔴🟡🟢 y las 3 Q's (¿Qué pasó? / ¿Por qué pasó? / ¿Qué haremos?). No simplifiques ni improvises métricas — reutiliza literalmente las mismas tablas.
 
-1. Actualizas `.env` con `CAMPAIGN_ID=...` (ya debería estar de la FASE 4).
-2. Ejecutas `python scripts/fetch_adsets.py` con `Bash`.
-3. Lees `adsets_{campaign_id}.json` con `Read`.
-4. Presentas los adsets ordenados por **resultado principal** (compras, leads, conversaciones, etc.).
-5. Comparas métricas clave: gasto, resultado, costo por resultado, frecuencia.
-6. Aplicas las mismas 3 Q's del tipo de campaña, pero al nivel del adset.
-7. **Antes de recomendar pausar un adset**, verificas:
-   - ¿El presupuesto es CBO? → Si es CBO, Meta ya está optimizando — no pauses sin evidencia sólida (mínimo 7 días de datos)
-   - ¿El adset está en fase de aprendizaje? → Nunca pauses durante la fase de aprendizaje
-   - ¿Qué porcentaje del presupuesto total representa? → Si representa <10% del gasto es señal de que Meta ya lo está depriorizando naturalmente
+**Contexto que heredas de fases anteriores (no preguntes de nuevo):**
+- Tipo de campaña detectado en FASE 4 (`ventas`, `interaccion`, `cp_formularios`, `cp_sitio_web`, `reconocimiento`)
+- Objetivo del usuario (ROAS / CPL / costo por conversación) capturado al inicio de FASE 5
+- Periodo (`date_preset`)
+
+Las **reglas del Efecto Desglose** son una capa adicional aplicada **encima** del análisis 3 Q's — no un sustituto.
 
 ---
 
-### 🎨 Análisis de Anuncios Individuales
+### 🗂️ FASE 6.1 — Análisis de Conjuntos de Anuncios
 
-Cuando el usuario quiera ver el detalle por anuncio, **tú**:
+**Pasos de ejecución:**
 
-1. Actualizas `.env` con `ADSET_ID=...` (del adset que el usuario eligió).
-2. Ejecutas `python scripts/fetch_ads.py` con `Bash`.
-3. Lees `ads_{adset_id}.json` con `Read`. El JSON ya trae `desglose_warnings` por anuncio y `spend_pct_of_adset`.
+1. Actualiza `.env` con `CAMPAIGN_ID=...` (ya está de FASE 4).
+2. Ejecuta `python scripts/fetch_adsets.py` con `Bash`.
+3. Lee `adsets_{campaign_id}.json` con `Read`.
 
-Luego:
+**Luego, por cada adset activo relevante (ordenados por resultado principal):**
 
-1. Presenta los anuncios ordenados por **costo por resultado** dentro de su adset
-2. Compara: gasto, resultado, CPR, CTR, % video 3s, tiempo de video, frecuencia
-3. **Regla del efecto desglose — antes de recomendar pausar un anuncio:**
+1. **Identifica el tipo de campaña heredado** — usa exactamente el mismo tipo que detectaste en FASE 4. No preguntes al usuario.
+2. **Presenta la misma tabla de métricas de FASE 5** correspondiente a ese tipo, con los benchmarks semáforo 🔴🟡🟢. Rellena cada fila con los valores del JSON del adset (campo `insights`). Si una métrica no existe en el JSON, márcala como "—" — nunca la inventes.
+3. **Disclaimer obligatorio debajo de la tabla (cópialo tal cual):**
+
+   > ⚠️ **Las dos métricas creativas** — `% Reproducciones 3s / Impresiones` y `Tiempo promedio de reproducción` — **a nivel de conjunto son un promedio ponderado de todos los anuncios del adset**. Esto oculta qué creativo específico engancha y cuál no. Para decisiones creativas (cambiar el gancho, acortar el video, ajustar el guión) **revísalas en FASE 6.2 al nivel del anuncio individual**. A nivel adset úsalas solo como señal agregada.
+
+4. **Aplica las 3 Q's completas** (`¿Qué pasó?` / `¿Por qué pasó?` / `¿Qué haremos?`) usando el **objetivo del usuario** capturado en FASE 5 como benchmark — idéntico al análisis de campaña.
+
+**Capa adicional — antes de recomendar pausar un adset verifica:**
+
+- ¿El presupuesto es **CBO**? → Si sí, Meta ya está optimizando. No pauses sin mínimo 7 días de datos sólidos.
+- ¿El adset está en **fase de aprendizaje**? → Nunca pauses durante aprendizaje (reinicia todo el proceso).
+- ¿Qué **% del gasto total** representa? → Si es <10%, Meta ya lo está depriorizando — pausar no cambia mucho.
+
+---
+
+### 🎨 FASE 6.2 — Análisis de Anuncios Individuales
+
+**Pasos de ejecución:**
+
+1. Actualiza `.env` con `ADSET_ID=...` (del adset que el usuario eligió).
+2. Ejecuta `python scripts/fetch_ads.py` con `Bash`.
+3. Lee `ads_{adset_id}.json` con `Read`. El JSON ya trae `desglose_warnings` y `spend_pct_of_adset` precalculados por anuncio.
+
+**Luego, por cada anuncio activo con datos:**
+
+1. **Usa el mismo tipo de campaña heredado** — no preguntes al usuario de nuevo.
+2. **Presenta la misma tabla de métricas de FASE 5** correspondiente a ese tipo, con benchmarks semáforo 🔴🟡🟢. Rellena cada fila con los valores del objeto `insights` del anuncio en el JSON. Si una métrica no está disponible, márcala "—" — **no inventes ni estimes**.
+
+   > 💡 A nivel anuncio **sí tiene sentido interpretar `% Reproducciones 3s` y `Tiempo promedio de reproducción` como indicadores creativos directos**. Ya no son promedios — son la performance real del creativo específico. Usa estos números para decidir si el gancho funciona, si el guión retiene, o si hay que rehacer el video.
+
+3. **Aplica las 3 Q's completas** (`¿Qué pasó?` / `¿Por qué pasó?` / `¿Qué haremos?`) usando el **objetivo del usuario** como benchmark, tal cual lo harías a nivel campaña.
+4. Lista las advertencias de `desglose_warnings` del JSON debajo del análisis de cada anuncio.
+
+**Capa adicional — regla del Efecto Desglose antes de recomendar pausar un anuncio:**
 
 | Situación | Recomendación |
 |-----------|---------------|
-| El anuncio tiene <7 días activo | ⏳ Esperar — no hay suficientes datos |
-| Es el único anuncio activo en el adset | 🚫 No pausar — el adset se quedaría sin entrega |
-| Tiene bajo gasto pero el adset funciona bien | ✅ Puede pausarse — Meta ya lo está ignorando naturalmente |
-| Tiene alto gasto pero CPR peor que otros | ⚠️ Efecto desglose posible — evalúa el adset en conjunto antes de decidir |
-| Tiene alto gasto Y el adset completo está mal | 🔴 Candidato a pausar — pero revisa si hay fase de aprendizaje activa |
+| El anuncio tiene <7 días activo | ⏳ Esperar — no hay datos suficientes |
+| Es el único anuncio activo en el adset | 🚫 No pausar — el adset se queda sin entrega |
+| Tiene bajo gasto pero el adset funciona bien | ✅ Puede pausarse — Meta ya lo ignora |
+| Tiene alto gasto pero CPR peor que otros | ⚠️ Efecto desglose posible — evalúa el adset en conjunto antes |
+| Tiene alto gasto Y el adset completo está mal | 🔴 Candidato a pausar — revisa si hay fase de aprendizaje |
 
-4. **Nunca recomiendes pausar varios anuncios a la vez** — un cambio a la vez para no resetear el aprendizaje
+**Nunca recomiendes pausar varios anuncios a la vez** — un cambio a la vez para no resetear el aprendizaje del adset.
+
+> 🧭 **Por qué insistir en el framework completo a nivel anuncio:** Claude tiende a improvisar métricas superficiales ("tiene bajo CTR, pausar") cuando no se le pide la tabla estructurada. El JSON de `fetch_ads.py` trae exactamente los mismos campos que el de campaña (spend, impressions, frequency, CPM, video 3s rate, video avg time, outbound clicks, CTR, purchases/leads/messages, CPA por objetivo, ROAS, quality rankings). Si aplicas la tabla completa del tipo de campaña, las decisiones se basan en evidencia, no en impresiones.
 
 ---
 
