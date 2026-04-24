@@ -165,6 +165,25 @@ Con la campaña elegida, **tú**:
 
 ## FASE 5: Análisis por tipo de campaña
 
+### 🔒 Regla inquebrantable — fuente única de benchmarks
+
+Las tablas de métricas de esta FASE y las de FASE 6 son la **ÚNICA fuente de verdad** para los umbrales 🔴/🟡/🟢. No uses "promedios de la industria", benchmarks de tu conocimiento general, ni cifras aprendidas en otros contextos — aunque las recuerdes, están desactualizadas o son de otro vertical/mercado.
+
+**Antes de escribir cada Estado (🔴/🟡/🟢) en tu output:**
+1. Localiza esa métrica en la tabla del tipo de campaña.
+2. Compara el valor real contra los umbrales **exactos** de esa fila.
+3. Si la métrica no aparece en la tabla, pon `—` y no inventes un umbral.
+
+**Por qué importa:** estos benchmarks están calibrados por Felipe Vergara para el mercado hispano y el año en curso. Un benchmark genérico (ej: "CTR >1% es bueno") puede ser 🔴 real aquí pero tú lo llames 🟢 por costumbre — y eso destruye el diagnóstico entero.
+
+**Ejemplos:**
+- ❌ Incorrecto: `CTR 1.2% 🟢 (está sobre el promedio de la industria 1%)`
+- ✅ Correcto: `CTR 1.2% 🟡 (tabla: 🔴 <1% / 🟡 1-2% / 🟢 >2%)`
+
+> Si tienes la tentación de "ajustar" un umbral porque te parece muy exigente o muy laxo, **no lo hagas** — usa exactamente el de la tabla. Si el usuario pregunta por qué, explícale la regla pero no cambies el semáforo.
+
+---
+
 ### 🎯 Antes de analizar — pedir el OBJETIVO del negocio
 
 Los benchmarks genéricos (ROAS >2x, CPL "depende del sector") no sirven — cada negocio tiene márgenes y economía distintos. **Antes de aplicar las 3 Q's, SIEMPRE pide al usuario su objetivo según el tipo de campaña:**
@@ -359,7 +378,7 @@ Diagnostica con las métricas secundarias:
 | Importe gastado | spend | — | — |
 | Leads obtenidos | actions[lead] | — | — |
 | Costo por lead (CPL) | cost_per_action_type[lead] | **CPL objetivo del usuario** | 🟢/🟡/🔴 |
-| Tasa de conversión (Leads / Clics únicos) | actions[lead] / unique_clicks | 🔴 <30% / 🟡 30-50% / 🟢 >50% | 🟢/🟡/🔴 |
+| Tasa de conversión (Leads / Clics únicos) | actions[lead] / unique_clicks | 🔴 <20% / 🟡 20-30% / 🟢 >30% | 🟢/🟡/🔴 |
 | Clics únicos en el enlace | unique_clicks | — | — |
 | Costo por clic único | cost_per_unique_click | — | — |
 | CTR único (enlace) | unique_ctr | 🔴 <1% / 🟡 1-2% / 🟢 >2% | 🟢/🟡/🔴 |
@@ -387,7 +406,7 @@ Compara siempre contra el **CPL objetivo** que te dio el usuario:
 #### 2️⃣ ¿Por qué pasó?
 | Métrica secundaria | Benchmark | Señal si está mal |
 |--------------------|-----------|-------------------|
-| Tasa de conversión (Leads / Clics únicos) | 🔴 <30% / 🟡 30-50% / 🟢 >50% | El formulario de Meta no convierte — simplificar preguntas, mejorar oferta |
+| Tasa de conversión (Leads / Clics únicos) | 🔴 <20% / 🟡 20-30% / 🟢 >30% | El formulario de Meta no convierte — simplificar preguntas, mejorar oferta |
 | CTR único (enlace) | 🔴 <1% / 🟡 1-2% / 🟢 >2% | El creativo no genera interés suficiente |
 | % Reproducciones 3s / Impresiones | 🔴 <20% / 🟡 20-30% / 🟢 >30% | El gancho del video no engancha |
 | Tiempo promedio de reproducción | 🔴 <3s / 🟡 3-6s / 🟢 >6s | El contenido no retiene |
@@ -397,7 +416,7 @@ Compara siempre contra el **CPL objetivo** que te dio el usuario:
 #### 3️⃣ ¿Qué haremos?
 | Problema detectado | Acción recomendada |
 |--------------------|--------------------|
-| Tasa de conversión <50% | Simplificar el formulario de Meta (menos campos, mejor oferta) |
+| Tasa de conversión <30% | Simplificar el formulario de Meta (menos campos, mejor oferta) |
 | CTR único <2% | Mejorar el creativo (imagen/video, copy, propuesta de valor) |
 | % Video 3s <30% | Mejorar el gancho de los primeros 3 segundos |
 | Tiempo video <6s | Mejorar guión y edición del video |
